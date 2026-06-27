@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Color Palette */
+  --bg-main: #06070d;
+  --bg-surface: #10121d;
+  --bg-surface-elevated: #181b2c;
+  --bg-surface-glass: rgba(16, 18, 29, 0.7);
+  
+  --border-color: #22263a;
+  --border-color-glow: rgba(243, 18, 58, 0.2);
+  
+  /* Brand colors */
+  --primary: #f3123a;
+  --primary-hover: #ff3355;
+  --primary-glow: rgba(243, 18, 58, 0.4);
+  
+  --accent-cyan: #00f0ff;
+  --accent-cyan-glow: rgba(0, 240, 255, 0.3);
+  
+  --accent-green: #39ff14;
+  --accent-green-glow: rgba(57, 255, 20, 0.3);
+  
+  /* Category colors */
+  --color-sports-car: #ff007f;
+  --color-formula-car: #00f0ff;
+  --color-oval: #ffaa00;
+  --color-dirt-oval: #8b5a2b;
+  --color-dirt-road: #00ff66;
+  
+  /* License Group Colors */
+  --license-rookie: #ff1a1a;
+  --license-d: #ff8000;
+  --license-c: #ffff00;
+  --license-b: #00ff00;
+  --license-a: #0080ff;
+  --license-pro: #000000;
+  
+  /* Text */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  /* Fonts */
+  --sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, monospace;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(243, 18, 58, 0.25);
+  
+  /* Animations */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Background Gradients */
+.bg-glow-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-glow-effect::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, rgba(243, 18, 58, 0.1) 0%, rgba(0,0,0,0) 70%);
+  filter: blur(80px);
+  animation: floatGlow 12s ease-in-out infinite alternate;
+}
+
+.bg-glow-effect::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(0,0,0,0) 70%);
+  filter: blur(100px);
+  animation: floatGlow 18s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatGlow {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(10%, 10%) scale(1.1); }
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  border-radius: 16px;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.glass-panel:hover {
+  border-color: rgba(243, 18, 58, 0.3);
+  box-shadow: var(--shadow-lg), 0 0 15px rgba(243, 18, 58, 0.05);
+}
+
+/* Layout Utilities */
+#app {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  #app {
+    padding: 0 16px;
+  }
+}
+
+/* Badge System */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 6px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+}
+
+/* License Badges */
+.badge-license {
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+.badge-license.rookie { background-color: rgba(255, 26, 26, 0.15); border-color: rgba(255, 26, 26, 0.4); color: #ff6666; }
+.badge-license.class-d { background-color: rgba(255, 128, 0, 0.15); border-color: rgba(255, 128, 0, 0.4); color: #ffa64d; }
+.badge-license.class-c { background-color: rgba(255, 255, 0, 0.15); border-color: rgba(255, 255, 0, 0.4); color: #ffff80; }
+.badge-license.class-b { background-color: rgba(0, 255, 0, 0.12); border-color: rgba(0, 255, 0, 0.4); color: #66ff66; }
+.badge-license.class-a { background-color: rgba(0, 128, 255, 0.15); border-color: rgba(0, 128, 255, 0.4); color: #66b2ff; }
+.badge-license.pro { background-color: rgba(243, 18, 58, 0.2); border-color: var(--primary); color: #ffffff; text-shadow: 0 0 5px var(--primary); }
+
+/* Category Tags */
+.tag-category {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  border-left: 3.5px solid var(--border-color);
+  padding-left: 8px;
+}
+
+.tag-category.sports-car { border-left-color: var(--color-sports-car); }
+.tag-category.formula-car { border-left-color: var(--color-formula-car); }
+.tag-category.oval { border-left-color: var(--color-oval); }
+.tag-category.dirt-oval { border-left-color: var(--color-dirt-oval); }
+.tag-category.dirt-road { border-left-color: var(--color-dirt-road); }
+
+/* Micro-animations and Hover Effects */
+.btn-primary {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(243, 18, 58, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(243, 18, 58, 0.35), var(--shadow-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Checkbox/Toggle Switch styling */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 22px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  transition: .3s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-secondary);
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(22px);
+  background-color: #ffffff;
+}

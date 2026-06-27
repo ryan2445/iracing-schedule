@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+.env
+
+# Node / Frontend
+node_modules/
+dist/
+.svelte-kit/
+.env.local
+
+# OS
+.DS_Store
