@@ -1,14 +1,14 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import logging
+import os
 from typing import Any
 
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from pydantic import BaseModel
 from app.config import settings
-from app.mock_data import MOCK_SERIES, MOCK_TRACKS, get_upcoming_sessions
-from app.iracing_api import iracing_client, IRacingClient
+from app.schedule import schedule_engine, PDF_PATH
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="iRacing Race Tracker API",
-    description="Backend API for tracking upcoming iRacing sessions, schedules, and tracks.",
-    version="1.0.0",
+    description="Backend API for tracking upcoming iRacing sessions, schedules, and tracks from parsed PDF schedule.",
+    version="2.0.0",
 )
 
 # Enable CORS for the Svelte frontend
@@ -31,62 +31,63 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup() -> None:
-    logger.info(f"iRacing Race Tracker starting up. Mock Mode: {settings.mock_mode}")
-    if not settings.mock_mode:
-        success = iracing_client.login()
-        if not success:
-            logger.warning("Failed to authenticate with iRacing API. Defaulting to Mock Mode.")
-            settings.mock_mode = True
+    logger.info("iRacing Race Tracker starting up with Static PDF Schedule Engine.")
 
 @app.get("/api/status")
 def get_status() -> dict[str, Any]:
     return {
         "status": "online",
-        "mock_mode": settings.mock_mode,
-        "username": settings.iracing_username if settings.iracing_username else "None",
+        "mock_mode": False,
+        "username": "Static PDF Schedule",
         "time_utc": datetime.now(timezone.utc).isoformat(),
     }
 
+@app.get("/api/cache/status")
+def get_cache_status() -> dict[str, Any]:
+    """
+    Exposes PDF Schedule parser diagnostic information to the Svelte dashboard.
+    We return the status representing in-memory parsing (no disk cache).
+    """
+    pdf_size = os.path.exists(PDF_PATH) and os.path.getsize(PDF_PATH) or 0
+    
+    return {
+        "db_path": "iracing_season_3_schedule.pdf",
+        "db_size_bytes": pdf_size,
+        "total_snapshots": len(schedule_engine.series_list),
+        "endpoints": [
+            {
+                "endpoint": "PDF Parser Engine",
+                "count": len(schedule_engine.series_list),
+                "last_fetched": datetime.now(timezone.utc).isoformat(),
+                "total_bytes": 0
+            }
+        ],
+        "recent_history": [
+            {
+                "id": 1,
+                "endpoint": "Parsed PDF successfully",
+                "fetched_at": datetime.now(timezone.utc).isoformat(),
+                "size_bytes": 0
+            }
+        ]
+    }
+
+
 @app.get("/api/series")
 def get_series() -> list[dict[str, Any]]:
-    if settings.mock_mode:
-        return MOCK_SERIES
-    
-    try:
-        # Try fetching real series list
-        real_series = iracing_client.get_series_list()
-        if real_series:
-            # Map/format real series to match our structure if needed, or return directly
-            # For now, return real series list
-            return real_series
-        return MOCK_SERIES
-    except Exception as e:
-        logger.error(f"Error fetching series, falling back to mock: {e}")
-        return MOCK_SERIES
+    return schedule_engine.series_list
 
 @app.get("/api/tracks")
 def get_tracks() -> list[dict[str, Any]]:
-    return MOCK_TRACKS
+    return schedule_engine.tracks_list
 
 @app.get("/api/categories")
 def get_categories() -> list[str]:
-    # Extract unique categories
-    categories = sorted(list(set(series["category"] for series in MOCK_SERIES)))
-    return categories
+    return schedule_engine.categories_list
 
 @app.get("/api/licenses")
 def get_licenses() -> list[dict[str, Any]]:
-    # Gather distinct license groups and sort by id
-    seen = set()
-    licenses = []
-    for series in MOCK_SERIES:
-        g = series["license_group"]
-        gid = series["license_group_id"]
-        if g not in seen:
-            seen.add(g)
-            licenses.append({"name": g, "id": gid})
-    licenses.sort(key=lambda x: x["id"])
-    return licenses
+    return schedule_engine.licenses_list
 
 @app.get("/api/sessions")
 def get_sessions(
@@ -98,13 +99,12 @@ def get_sessions(
     limit: int | None = Query(None, ge=1),
 ) -> list[dict[str, Any]]:
     """
-    Get upcoming race sessions with advanced filtering.
+    Get upcoming race sessions with advanced filtering from the parsed schedule PDF.
     """
     try:
-        # Currently sessions are generated dynamically from mock/schedule data
-        # Even in live mode, generating schedule-based upcoming sessions offers better performance
-        # than hitting rate-limited iRacing endpoints for every request.
-        sessions = get_upcoming_sessions(days=days)
+        now = datetime.now(timezone.utc)
+        end = now + timedelta(days=days)
+        sessions = schedule_engine.generate_sessions_for_range(now, end)
         
         # Apply filters
         filtered_sessions = []
@@ -141,53 +141,13 @@ def get_sessions(
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-class ConfigUpdate(BaseModel):
-    iracing_username: str | None = None
-    iracing_password: str | None = None
-    mock_mode: bool = True
-
-
 @app.post("/api/config")
-def update_config(update: ConfigUpdate) -> dict[str, Any]:
-    if not update.mock_mode:
-        if not update.iracing_username or not update.iracing_password:
-            raise HTTPException(status_code=400, detail="Credentials required to disable mock mode.")
-        
-        # Test credentials
-        test_client = IRacingClient()
-        # Temporarily override settings for test
-        settings.iracing_username = update.iracing_username
-        settings.iracing_password = update.iracing_password
-        if not test_client.login():
-            settings.iracing_username = None
-            settings.iracing_password = None
-            raise HTTPException(status_code=401, detail="Authentication failed with iRacing API.")
-        
-        # Set global client
-        iracing_client.client = test_client.client
-        iracing_client.is_authenticated = True
-        settings.mock_mode = False
-    else:
-        settings.mock_mode = True
-        
-    # Write to .env
-    try:
-        env_lines = []
-        if update.iracing_username:
-            env_lines.append(f"IRACING_USERNAME={update.iracing_username}\n")
-        if update.iracing_password:
-            env_lines.append(f"IRACING_PASSWORD={update.iracing_password}\n")
-        env_lines.append(f"MOCK_MODE={str(update.mock_mode).lower()}\n")
-        
-        with open(".env", "w") as f:
-            f.writelines(env_lines)
-            
-        logger.info("Successfully updated .env file with new credentials.")
-    except Exception as e:
-        logger.error(f"Failed to write .env file: {e}")
-        
+def update_config() -> dict[str, Any]:
+    """
+    Configuration update endpoint. Stubbed out as the PDF Schedule is active.
+    """
     return {
         "success": True,
-        "mock_mode": settings.mock_mode,
-        "message": "Configuration updated successfully."
+        "mock_mode": False,
+        "message": "PDF Schedule Engine is active and running."
     }

@@ -355,7 +355,7 @@
     line-height: 1.1;
     letter-spacing: -0.03em;
     background: linear-gradient(to right, #fff, var(--text-secondary));
-    -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
@@ -523,10 +523,6 @@
     gap: 16px;
     padding: 80px 20px;
     text-align: center;
-  }
-
-  .spinner {
-    animation: spin 1s linear infinite;
   }
 
   @keyframes spin {
