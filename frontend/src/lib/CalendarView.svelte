@@ -1,6 +1,6 @@
 <script lang="ts">
   import SessionCard from './SessionCard.svelte';
-  import { Calendar, ChevronLeft, ChevronRight } from 'lucide-svelte';
+  import { Calendar, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-svelte';
 
   interface Track {
     track_id: number;
@@ -17,13 +17,11 @@
     license_group: string;
     license_group_id: number;
     fixed_setup: boolean;
-    official: boolean;
     cars: string[];
     track: Track;
     start_time: string;
-    end_time: string;
     duration_minutes: number;
-    popularity_score: number;
+    duration_laps?: number | null;
   }
 
   // Svelte 5 Props Rune
@@ -68,6 +66,17 @@
   const dailySessions = $derived(
     sessions.filter((s: Session) => isSameDay(s.start_time, days[selectedDayIndex]))
   );
+
+  // Pagination for fast rendering inside the calendar view
+  let limitCount = $state(100);
+  const displayedDailySessions = $derived(dailySessions.slice(0, limitCount));
+
+  $effect(() => {
+    // Reset limit whenever sessions or selected day changes
+    sessions;
+    selectedDayIndex;
+    limitCount = 100;
+  });
 </script>
 
 <div class="calendar-container glass-panel">
@@ -131,7 +140,7 @@
       <div class="timeline-wrapper">
         <div class="timeline-line"></div>
         <div class="sessions-list">
-          {#each dailySessions as session (session.session_id)}
+          {#each displayedDailySessions as session (session.session_id)}
             <div class="timeline-item">
               <div class="timeline-dot"></div>
               <div class="timeline-card-container">
@@ -140,6 +149,15 @@
             </div>
           {/each}
         </div>
+
+        {#if dailySessions.length > limitCount}
+          <div class="load-more-container">
+            <button class="btn-load-more" onclick={() => limitCount += 100}>
+              <RefreshCw size={14} />
+              <span>Show More ({dailySessions.length - limitCount} remaining)</span>
+            </button>
+          </div>
+        {/if}
       </div>
     {/if}
   </div>
@@ -372,5 +390,34 @@
 
   .timeline-card-container {
     width: 100%;
+  }
+
+  /* Load More styling */
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 12px;
+  }
+
+  .btn-load-more {
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all var(--transition-normal);
+  }
+
+  .btn-load-more:hover {
+    border-color: rgba(243, 18, 58, 0.4);
+    background-color: rgba(243, 18, 58, 0.05);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(243, 18, 58, 0.15);
   }
 </style>

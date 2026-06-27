@@ -28,13 +28,11 @@
     license_group: string;
     license_group_id: number;
     fixed_setup: boolean;
-    official: boolean;
     cars: string[];
     track: Track;
     start_time: string;
-    end_time: string;
     duration_minutes: number;
-    popularity_score: number;
+    duration_laps?: number | null;
   }
 
   let { session } = $props<{ session: Session }>();
@@ -184,19 +182,13 @@
           <div class="stats-grid">
             <div class="stat-item">
               <span class="stat-label">Duration</span>
-              <span class="stat-value">{session.duration_minutes} Mins</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Official Race</span>
-              <span class="stat-value">{session.official ? 'Yes' : 'No'}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Popularity</span>
-              <span class="stat-value">{session.popularity_score}%</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">End Time</span>
-              <span class="stat-value">{formatLocalTime(session.end_time)}</span>
+              <span class="stat-value">
+                {#if session.duration_laps}
+                  {session.duration_laps} Laps
+                {:else}
+                  {session.duration_minutes} Mins
+                {/if}
+              </span>
             </div>
           </div>
         </div>
@@ -473,7 +465,7 @@
 
   .stats-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
 

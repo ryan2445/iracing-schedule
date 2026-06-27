@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { 
     Activity, 
     List, 
@@ -10,7 +10,9 @@
     Zap, 
     Gauge, 
     Clock, 
-    Trophy
+    ArrowUp,
+    ArrowDown,
+    SlidersHorizontal
   } from 'lucide-svelte';
 
   import Filters from './lib/Filters.svelte';
@@ -34,18 +36,11 @@
     license_group: string;
     license_group_id: number;
     fixed_setup: boolean;
-    official: boolean;
     cars: string[];
     track: Track;
     start_time: string;
-    end_time: string;
     duration_minutes: number;
-    popularity_score: number;
-  }
-
-  interface License {
-    name: string;
-    id: number;
+    duration_laps?: number | null;
   }
 
   interface APIStatus {
@@ -61,24 +56,73 @@
   
   // Available filter options fetched on mount
   let categories = $state<string[]>([]);
-  let licenses = $state<License[]>([]);
   
   // Filter bindings
   let searchQuery = $state('');
   let selectedCategories = $state<string[]>([]);
-  let selectedLicenses = $state<string[]>([]);
-  let fixedOnly = $state(false);
+
+  // Sorting bindings
+  type SortField = 'start_time' | 'series_name' | 'category' | 'license_group_id' | 'duration_minutes' | 'track_name' | 'fixed_setup';
+  let sortBy = $state<SortField>('start_time');
+  let sortOrder = $state<'asc' | 'desc'>('asc');
 
   // Loaded sessions list
   let sessions = $state<Session[]>([]);
   let isLoadingSessions = $state(false);
   let sessionFetchError = $state('');
 
+  // Pagination / Limiting for ultra-fast rendering performance
+  let limitCount = $state(100);
+
+  // Filter sessions to only keep the next upcoming timeslot for each series
+  const nextUpcomingSessions = $derived.by(() => {
+    const minSessionsMap = new Map<number, Session>();
+    for (const session of sessions) {
+      const existing = minSessionsMap.get(session.series_id);
+      if (!existing || new Date(session.start_time) < new Date(existing.start_time)) {
+        minSessionsMap.set(session.series_id, session);
+      }
+    }
+    return Array.from(minSessionsMap.values());
+  });
+
+  // Sorting logic using Svelte 5 fine-grained derived rune
+  const sortedSessions = $derived.by(() => {
+    const list = [...nextUpcomingSessions];
+    list.sort((a, b) => {
+      let valA: any;
+      let valB: any;
+
+      if (sortBy === 'track_name') {
+        valA = a.track?.track_name || '';
+        valB = b.track?.track_name || '';
+      } else {
+        valA = a[sortBy];
+        valB = b[sortBy];
+      }
+
+      if (typeof valA === 'string') {
+        valA = valA.toLowerCase();
+        valB = (valB || '').toLowerCase();
+      }
+
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  });
+
+  const displayedSessions = $derived(sortedSessions.slice(0, limitCount));
+
+  $effect(() => {
+    // Reset limitCount whenever sessions array changes (e.g. filters applied)
+    sessions;
+    limitCount = 100;
+  });
+
   // Dashboard Stats
   const activeSeriesCount = $derived(new Set(sessions.map(s => s.series_id)).size);
-  const nextUpSession = $derived(
-    sessions.find(s => new Date(s.start_time).getTime() > new Date().getTime())
-  );
   
   const startingSoonCount = $derived(
     sessions.filter(s => {
@@ -87,20 +131,17 @@
     }).length
   );
 
-  const officialRacesCount = $derived(sessions.filter(s => s.official).length);
 
   // Fetch meta-information from the backend API
   async function fetchMetadata() {
     try {
-      const [statusRes, catRes, licRes] = await Promise.all([
+      const [statusRes, catRes] = await Promise.all([
         fetch('http://localhost:8000/api/status'),
-        fetch('http://localhost:8000/api/categories'),
-        fetch('http://localhost:8000/api/licenses')
+        fetch('http://localhost:8000/api/categories')
       ]);
 
       if (statusRes.ok) apiStatus = await statusRes.json();
       if (catRes.ok) categories = await catRes.json();
-      if (licRes.ok) licenses = await licRes.json();
     } catch (e) {
       console.error('Failed to load initial metadata', e);
     }
@@ -118,16 +159,10 @@
       if (searchQuery) {
         url.searchParams.append('search', searchQuery);
       }
-      if (fixedOnly) {
-        url.searchParams.append('fixed', 'true');
-      }
       
       // Append array filters (multi-value query params)
       selectedCategories.forEach(cat => {
         url.searchParams.append('category', cat);
-      });
-      selectedLicenses.forEach(lic => {
-        url.searchParams.append('license', lic);
       });
 
       const response = await fetch(url.toString());
@@ -148,11 +183,28 @@
     // This will trigger automatically when any of these state variables change
     searchQuery;
     selectedCategories;
-    selectedLicenses;
-    fixedOnly;
     
-    fetchSessions();
+    untrack(() => {
+      fetchSessions();
+    });
   });
+
+  function handleSortChange(fieldId: SortField) {
+    if (sortBy === fieldId) {
+      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortBy = fieldId;
+      if (fieldId === 'start_time') {
+        sortOrder = 'desc';
+      } else {
+        sortOrder = 'asc';
+      }
+    }
+  }
+
+  function toggleSortOrder() {
+    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+  }
 
   onMount(() => {
     fetchMetadata();
@@ -194,7 +246,6 @@
   <!-- OAuth Integration and connection configuration panel -->
   <OAuthPanel status={apiStatus} onConfigUpdated={fetchMetadata} />
 
-  <!-- Premium Metrics Cards Grid -->
   <section class="stats-panel-grid">
     <div class="metric-card glass-panel">
       <div class="metric-icon-wrap sports-car">
@@ -215,38 +266,13 @@
         <span class="metric-value">{startingSoonCount}</span>
       </div>
     </div>
-
-    <div class="metric-card glass-panel">
-      <div class="metric-icon-wrap formula-car">
-        <Trophy size={20} />
-      </div>
-      <div class="metric-content">
-        <span class="metric-label">Official Sessions</span>
-        <span class="metric-value">{officialRacesCount}</span>
-      </div>
-    </div>
-
-    <div class="metric-card glass-panel next-up">
-      <div class="metric-icon-wrap primary-red">
-        <Zap size={20} />
-      </div>
-      <div class="metric-content">
-        <span class="metric-label">Next Up Starting</span>
-        <span class="metric-value text-ellipsis">
-          {nextUpSession ? nextUpSession.series_name : 'No races scheduled'}
-        </span>
-      </div>
-    </div>
   </section>
 
   <!-- Shared Filter Dashboard Component -->
   <Filters 
     bind:search={searchQuery}
     bind:selectedCategories
-    bind:selectedLicenses
-    bind:fixedOnly
     availableCategories={categories}
-    availableLicenses={licenses}
   />
 
   <!-- Main View Render Block -->
@@ -270,10 +296,50 @@
     <div class="linear-schedule-container">
       <div class="view-header">
         <h2>Live Race Grid</h2>
-        <span class="badge badge-sessions-count">{sessions.length} upcoming sessions found</span>
+        <span class="badge badge-sessions-count">{nextUpcomingSessions.length} upcoming sessions found</span>
       </div>
 
-      {#if sessions.length === 0}
+      <!-- Premium Sort Toolbar -->
+      <div class="sort-toolbar-panel glass-panel">
+        <div class="sort-label-group">
+          <SlidersHorizontal size={14} class="text-primary-color" />
+          <span class="sort-title">Sort Grid:</span>
+        </div>
+        <div class="sort-pills-container">
+          {#each [
+            { id: 'start_time', label: 'Start Time' },
+            { id: 'series_name', label: 'Series Name' },
+            { id: 'category', label: 'Category' },
+            { id: 'license_group_id', label: 'License' },
+            { id: 'duration_minutes', label: 'Duration' },
+            { id: 'track_name', label: 'Track' },
+            { id: 'fixed_setup', label: 'Setup' }
+          ] as field}
+            <button 
+              class="sort-pill-btn {sortBy === field.id ? 'active' : ''}" 
+              onclick={() => handleSortChange(field.id as SortField)}
+            >
+              <span>{field.label}</span>
+              {#if sortBy === field.id}
+                <span class="sort-dir-arrow">
+                  {sortOrder === 'asc' ? '↑' : '↓'}
+                </span>
+              {/if}
+            </button>
+          {/each}
+        </div>
+        <button class="sort-order-toggle" onclick={toggleSortOrder} aria-label="Toggle sorting order">
+          {#if sortOrder === 'asc'}
+            <ArrowUp size={12} />
+            <span>Ascending</span>
+          {:else}
+            <ArrowDown size={12} />
+            <span>Descending</span>
+          {/if}
+        </button>
+      </div>
+
+      {#if nextUpcomingSessions.length === 0}
         <div class="empty-state glass-panel">
           <Info size={32} class="text-secondary" />
           <h3>No Match Found</h3>
@@ -281,10 +347,19 @@
         </div>
       {:else}
         <div class="sessions-vertical-stack">
-          {#each sessions as session (session.session_id)}
+          {#each displayedSessions as session (session.session_id)}
             <SessionCard {session} />
           {/each}
         </div>
+
+        {#if nextUpcomingSessions.length > limitCount}
+          <div class="load-more-container">
+            <button class="btn-load-more" onclick={() => limitCount += 100}>
+              <RefreshCw size={14} />
+              <span>Show More ({nextUpcomingSessions.length - limitCount} remaining)</span>
+            </button>
+          </div>
+        {/if}
       {/if}
     </div>
   {:else}
@@ -411,18 +486,12 @@
     box-shadow: var(--shadow-sm);
   }
 
-  /* Dashboard Stats Grid */
+  /* Dashboard Stats Grid (Modified to 2 Columns) */
   .stats-panel-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-bottom: 24px;
-  }
-
-  @media (max-width: 1024px) {
-    .stats-panel-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
   }
 
   @media (max-width: 550px) {
@@ -458,15 +527,6 @@
     color: var(--accent-green);
   }
 
-  .metric-icon-wrap.formula-car {
-    background-color: rgba(0, 240, 255, 0.1);
-    color: var(--color-formula-car);
-  }
-
-  .metric-icon-wrap.primary-red {
-    background-color: rgba(243, 18, 58, 0.1);
-    color: var(--primary);
-  }
 
   .metric-content {
     display: flex;
@@ -488,10 +548,105 @@
     color: var(--text-primary);
   }
 
-  .text-ellipsis {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  /* Sorting Toolbar Panel */
+  .sort-toolbar-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+  }
+
+  @media (max-width: 900px) {
+    .sort-toolbar-panel {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+    }
+    .sort-pills-container {
+      width: 100%;
+    }
+  }
+
+  .sort-label-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    min-width: 110px;
+  }
+
+  .sort-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .sort-pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex-grow: 1;
+  }
+
+  .sort-pill-btn {
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all var(--transition-fast);
+  }
+
+  .sort-pill-btn:hover {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .sort-pill-btn.active {
+    background-color: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+  }
+
+  .sort-dir-arrow {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .sort-order-toggle {
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all var(--transition-normal);
+  }
+
+  .sort-order-toggle:hover {
+    border-color: rgba(243, 18, 58, 0.4);
+    background-color: rgba(243, 18, 58, 0.05);
+    color: #fff;
   }
 
   /* Linear View Header */
@@ -525,10 +680,6 @@
     text-align: center;
   }
 
-  @keyframes spin {
-    100% { transform: rotate(360deg); }
-  }
-
   .error-state,
   .empty-state {
     display: flex;
@@ -553,6 +704,34 @@
     font-size: 0.9rem;
     color: var(--text-secondary);
     max-width: 450px;
+  }
+
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 12px;
+  }
+
+  .btn-load-more {
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all var(--transition-normal);
+  }
+
+  .btn-load-more:hover {
+    border-color: rgba(243, 18, 58, 0.4);
+    background-color: rgba(243, 18, 58, 0.05);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(243, 18, 58, 0.15);
   }
 
   /* Footer */

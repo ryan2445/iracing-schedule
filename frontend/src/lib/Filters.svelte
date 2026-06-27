@@ -1,33 +1,19 @@
 <script lang="ts">
   import { 
     Search, 
-    Filter, 
     X, 
-    SlidersHorizontal, 
-    ShieldCheck, 
-    Settings2 
+    SlidersHorizontal
   } from 'lucide-svelte';
-
-  interface License {
-    name: string;
-    id: number;
-  }
 
   // Svelte 5 Props using runes
   let { 
     search = $bindable(''), 
     selectedCategories = $bindable([]), 
-    selectedLicenses = $bindable([]), 
-    fixedOnly = $bindable(false),
-    availableCategories = [],
-    availableLicenses = []
+    availableCategories = []
   } = $props<{
     search: string;
     selectedCategories: string[];
-    selectedLicenses: string[];
-    fixedOnly: boolean;
     availableCategories: string[];
-    availableLicenses: License[];
   }>();
 
   // Handle category toggle
@@ -39,25 +25,14 @@
     }
   }
 
-  // Handle license toggle
-  function toggleLicense(licenseName: string) {
-    if (selectedLicenses.includes(licenseName)) {
-      selectedLicenses = selectedLicenses.filter((l: string) => l !== licenseName);
-    } else {
-      selectedLicenses = [...selectedLicenses, licenseName];
-    }
-  }
-
   function clearAllFilters() {
     search = '';
     selectedCategories = [];
-    selectedLicenses = [];
-    fixedOnly = false;
   }
 
   // Derived check to see if any filter is active
   const hasActiveFilters = $derived(
-    search !== '' || selectedCategories.length > 0 || selectedLicenses.length > 0 || fixedOnly
+    search !== '' || selectedCategories.length > 0
   );
 </script>
 
@@ -111,33 +86,6 @@
         {/each}
       </div>
     </div>
-
-    <!-- License Level Filters -->
-    <div class="filter-item">
-      <span class="filter-label">License Requirements</span>
-      <div class="tags-row">
-        {#each availableLicenses as lic (lic.id)}
-          <button 
-            class="badge badge-license {lic.name.toLowerCase().replace(' ', '-')} filter-license-badge {selectedLicenses.includes(lic.name) ? 'selected' : ''}"
-            onclick={() => toggleLicense(lic.name)}
-          >
-            {lic.name}
-          </button>
-        {/each}
-      </div>
-    </div>
-
-    <!-- Setup Toggle Switch -->
-    <div class="filter-item setup-toggle-container">
-      <div class="toggle-info">
-        <span class="filter-label no-margin">Fixed Setup Only</span>
-        <span class="filter-desc">Filter by series where car setups cannot be modified</span>
-      </div>
-      <label class="toggle-switch">
-        <input type="checkbox" bind:checked={fixedOnly} />
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
   </div>
 </div>
 
@@ -189,7 +137,7 @@
   /* Filters layout grid */
   .filters-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr auto;
+    grid-template-columns: 1.2fr 2fr;
     gap: 24px;
     align-items: end;
   }
@@ -222,15 +170,6 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-secondary);
-  }
-
-  .filter-label.no-margin {
-    margin: 0;
-  }
-
-  .filter-desc {
-    font-size: 0.75rem;
-    color: var(--text-muted);
   }
 
   /* Search bar input wrapper */
@@ -318,52 +257,4 @@
   .filter-tag.oval.selected { background-color: var(--color-oval); border-color: var(--color-oval); color: #000; box-shadow: 0 0 10px rgba(255, 170, 0, 0.25); }
   .filter-tag.dirt-oval.selected { background-color: var(--color-dirt-oval); border-color: var(--color-dirt-oval); box-shadow: 0 0 10px rgba(139, 90, 43, 0.25); }
   .filter-tag.dirt-road.selected { background-color: var(--color-dirt-road); border-color: var(--color-dirt-road); color: #000; box-shadow: 0 0 10px rgba(0, 255, 102, 0.25); }
-
-  /* License badges selector */
-  .filter-license-badge {
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    opacity: 0.45;
-  }
-
-  .filter-license-badge:hover {
-    opacity: 0.8;
-  }
-
-  .filter-license-badge.selected {
-    opacity: 1;
-    transform: scale(1.03);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  }
-
-  /* Setup Switch Row */
-  .setup-toggle-container {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 14px;
-    background-color: var(--bg-surface-elevated);
-    border: 1px dashed var(--border-color);
-    border-radius: 8px;
-    width: 100%;
-  }
-
-  @media (max-width: 1024px) {
-    .setup-toggle-container {
-      grid-column: span 2;
-    }
-  }
-
-  @media (max-width: 650px) {
-    .setup-toggle-container {
-      grid-column: span 1;
-    }
-  }
-
-  .toggle-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
 </style>
