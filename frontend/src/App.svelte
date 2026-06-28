@@ -14,11 +14,9 @@
     ArrowDown,
     SlidersHorizontal
   } from 'lucide-svelte';
-
   import Filters from './lib/Filters.svelte';
   import SessionCard from './lib/SessionCard.svelte';
   import CalendarView from './lib/CalendarView.svelte';
-  import OAuthPanel from './lib/OAuthPanel.svelte';
 
   // Svelte 5 Types
   interface Track {
@@ -243,9 +241,6 @@
 </header>
 
 <main>
-  <!-- OAuth Integration and connection configuration panel -->
-  <OAuthPanel status={apiStatus} onConfigUpdated={fetchMetadata} />
-
   <section class="stats-panel-grid">
     <div class="metric-card glass-panel">
       <div class="metric-icon-wrap sports-car">

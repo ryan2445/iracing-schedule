@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.schedule import schedule_engine, PDF_PATH
 
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,9 +28,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.on_event("startup")
 def on_startup() -> None:
     logger.info("iRacing Race Tracker starting up with Static PDF Schedule Engine.")
+
 
 @app.get("/api/status")
 def get_status() -> dict[str, Any]:
@@ -42,6 +43,7 @@ def get_status() -> dict[str, Any]:
         "time_utc": datetime.now(timezone.utc).isoformat(),
     }
 
+
 @app.get("/api/cache/status")
 def get_cache_status() -> dict[str, Any]:
     """
@@ -49,7 +51,7 @@ def get_cache_status() -> dict[str, Any]:
     We return the status representing in-memory parsing (no disk cache).
     """
     pdf_size = os.path.exists(PDF_PATH) and os.path.getsize(PDF_PATH) or 0
-    
+
     return {
         "db_path": "iracing_season_3_schedule.pdf",
         "db_size_bytes": pdf_size,
@@ -59,7 +61,7 @@ def get_cache_status() -> dict[str, Any]:
                 "endpoint": "PDF Parser Engine",
                 "count": len(schedule_engine.series_list),
                 "last_fetched": datetime.now(timezone.utc).isoformat(),
-                "total_bytes": 0
+                "total_bytes": 0,
             }
         ],
         "recent_history": [
@@ -67,9 +69,9 @@ def get_cache_status() -> dict[str, Any]:
                 "id": 1,
                 "endpoint": "Parsed PDF successfully",
                 "fetched_at": datetime.now(timezone.utc).isoformat(),
-                "size_bytes": 0
+                "size_bytes": 0,
             }
-        ]
+        ],
     }
 
 
@@ -77,17 +79,21 @@ def get_cache_status() -> dict[str, Any]:
 def get_series() -> list[dict[str, Any]]:
     return schedule_engine.series_list
 
+
 @app.get("/api/tracks")
 def get_tracks() -> list[dict[str, Any]]:
     return schedule_engine.tracks_list
+
 
 @app.get("/api/categories")
 def get_categories() -> list[str]:
     return schedule_engine.categories_list
 
+
 @app.get("/api/licenses")
 def get_licenses() -> list[dict[str, Any]]:
     return schedule_engine.licenses_list
+
 
 @app.get("/api/sessions")
 def get_sessions(
@@ -105,36 +111,39 @@ def get_sessions(
         now = datetime.now(timezone.utc)
         end = now + timedelta(days=days)
         sessions = schedule_engine.generate_sessions_for_range(now, end)
-        
+
         # Apply filters
         filtered_sessions = []
         for session in sessions:
             # Category filter
             if categories and session["category"] not in categories:
                 continue
-                
+
             # License group filter
             if licenses and session["license_group"] not in licenses:
                 continue
-                
+
             # Fixed setup filter
             if fixed is not None and session["fixed_setup"] != fixed:
                 continue
-                
+
             # Search query filter
             if search:
                 query = search.lower()
                 series_match = query in session["series_name"].lower()
-                track_match = query in session["track"]["track_name"].lower() or query in session["track"]["config_name"].lower()
+                track_match = (
+                    query in session["track"]["track_name"].lower()
+                    or query in session["track"]["config_name"].lower()
+                )
                 car_match = any(query in car.lower() for car in session["cars"])
                 if not (series_match or track_match or car_match):
                     continue
-                    
+
             filtered_sessions.append(session)
-            
+
         if limit:
             filtered_sessions = filtered_sessions[:limit]
-            
+
         return filtered_sessions
     except Exception as e:
         logger.error(f"Error filtering sessions: {e}")
@@ -149,5 +158,5 @@ def update_config() -> dict[str, Any]:
     return {
         "success": True,
         "mock_mode": False,
-        "message": "PDF Schedule Engine is active and running."
+        "message": "PDF Schedule Engine is active and running.",
     }

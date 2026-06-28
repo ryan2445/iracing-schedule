@@ -1,39 +1,37 @@
 <script lang="ts">
-  import { 
-    Search, 
-    X, 
-    SlidersHorizontal
-  } from 'lucide-svelte';
+  import { Search, X, SlidersHorizontal } from 'lucide-svelte'
 
   // Svelte 5 Props using runes
-  let { 
-    search = $bindable(''), 
-    selectedCategories = $bindable([]), 
+  let {
+    search = $bindable(''),
+    selectedCategories = $bindable([]),
     availableCategories = []
   } = $props<{
-    search: string;
-    selectedCategories: string[];
-    availableCategories: string[];
-  }>();
+    search: string
+    selectedCategories: string[]
+    availableCategories: string[]
+  }>()
 
   // Handle category toggle
   function toggleCategory(category: string) {
     if (selectedCategories.includes(category)) {
-      selectedCategories = selectedCategories.filter((c: string) => c !== category);
+      selectedCategories = selectedCategories.filter(
+        (c: string) => c !== category
+      )
     } else {
-      selectedCategories = [...selectedCategories, category];
+      selectedCategories = [...selectedCategories, category]
     }
   }
 
   function clearAllFilters() {
-    search = '';
-    selectedCategories = [];
+    search = ''
+    selectedCategories = []
   }
 
   // Derived check to see if any filter is active
   const hasActiveFilters = $derived(
     search !== '' || selectedCategories.length > 0
-  );
+  )
 </script>
 
 <div class="filters-panel glass-panel">
@@ -55,17 +53,23 @@
   <div class="filters-grid">
     <!-- Search Bar -->
     <div class="filter-item search-box-container">
-      <label for="search" class="filter-label">Search Series, Track or Car</label>
+      <label for="search" class="filter-label"
+        >Search Series, Track or Car</label
+      >
       <div class="search-input-wrapper">
         <Search class="search-icon" size={16} />
-        <input 
+        <input
           id="search"
-          type="text" 
-          placeholder="e.g. IMSA, Spa, GT3, Mazda..." 
+          type="text"
+          placeholder="e.g. IMSA, Spa, GT3, Mazda..."
           bind:value={search}
         />
         {#if search}
-          <button class="clear-search-btn" onclick={() => search = ''} aria-label="Clear search">
+          <button
+            class="clear-search-btn"
+            onclick={() => (search = '')}
+            aria-label="Clear search"
+          >
             <X size={14} />
           </button>
         {/if}
@@ -77,8 +81,12 @@
       <span class="filter-label">Race Categories</span>
       <div class="tags-row">
         {#each availableCategories as category}
-          <button 
-            class="filter-tag {category.toLowerCase().replace(' ', '-')} {selectedCategories.includes(category) ? 'selected' : ''}"
+          <button
+            class="filter-tag {category
+              .toLowerCase()
+              .replace(' ', '-')} {selectedCategories.includes(category)
+              ? 'selected'
+              : ''}"
             onclick={() => toggleCategory(category)}
           >
             {category}
@@ -243,7 +251,7 @@
 
   .filter-tag:hover {
     color: var(--text-primary);
-    border-color: rgba(255,255,255,0.15);
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   /* Category specific tags selected states with theme matching borders */
@@ -252,9 +260,32 @@
     font-weight: 600;
   }
 
-  .filter-tag.sports-car.selected { background-color: var(--color-sports-car); border-color: var(--color-sports-car); box-shadow: 0 0 10px rgba(255, 0, 127, 0.25); }
-  .filter-tag.formula-car.selected { background-color: var(--color-formula-car); border-color: var(--color-formula-car); color: #000; box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); }
-  .filter-tag.oval.selected { background-color: var(--color-oval); border-color: var(--color-oval); color: #000; box-shadow: 0 0 10px rgba(255, 170, 0, 0.25); }
-  .filter-tag.dirt-oval.selected { background-color: var(--color-dirt-oval); border-color: var(--color-dirt-oval); box-shadow: 0 0 10px rgba(139, 90, 43, 0.25); }
-  .filter-tag.dirt-road.selected { background-color: var(--color-dirt-road); border-color: var(--color-dirt-road); color: #000; box-shadow: 0 0 10px rgba(0, 255, 102, 0.25); }
+  .filter-tag.sports-car.selected {
+    background-color: var(--color-sports-car);
+    border-color: var(--color-sports-car);
+    box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);
+  }
+  .filter-tag.formula-car.selected {
+    background-color: var(--color-formula-car);
+    border-color: var(--color-formula-car);
+    color: #000;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+  }
+  .filter-tag.oval.selected {
+    background-color: var(--color-oval);
+    border-color: var(--color-oval);
+    color: #000;
+    box-shadow: 0 0 10px rgba(255, 170, 0, 0.25);
+  }
+  .filter-tag.dirt-oval.selected {
+    background-color: var(--color-dirt-oval);
+    border-color: var(--color-dirt-oval);
+    box-shadow: 0 0 10px rgba(139, 90, 43, 0.25);
+  }
+  .filter-tag.dirt-road.selected {
+    background-color: var(--color-dirt-road);
+    border-color: var(--color-dirt-road);
+    color: #000;
+    box-shadow: 0 0 10px rgba(0, 255, 102, 0.25);
+  }
 </style>

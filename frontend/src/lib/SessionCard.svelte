@@ -1,115 +1,122 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { 
-    Clock, 
-    MapPin, 
-    Car, 
-    CheckCircle, 
-    Lock, 
-    ChevronDown, 
+  import { onMount } from 'svelte'
+  import {
+    Clock,
+    MapPin,
+    Car,
+    ChevronDown,
     ChevronUp,
-    Calendar,
     Award
-  } from 'lucide-svelte';
+  } from 'lucide-svelte'
 
   // Svelte 5 Runes for Props
   interface Track {
-    track_id: number;
-    track_name: string;
-    config_name: string;
-    category: string;
+    track_id: number
+    track_name: string
+    config_name: string
+    category: string
   }
 
   interface Session {
-    session_id: string;
-    series_id: number;
-    series_name: string;
-    category: string;
-    license_group: string;
-    license_group_id: number;
-    fixed_setup: boolean;
-    cars: string[];
-    track: Track;
-    start_time: string;
-    duration_minutes: number;
-    duration_laps?: number | null;
+    session_id: string
+    series_id: number
+    series_name: string
+    category: string
+    license_group: string
+    license_group_id: number
+    fixed_setup: boolean
+    cars: string[]
+    track: Track
+    start_time: string
+    duration_minutes: number
+    duration_laps?: number | null
   }
 
-  let { session } = $props<{ session: Session }>();
+  let { session } = $props<{ session: Session }>()
 
   // Svelte 5 State Runes
-  let isExpanded = $state(false);
-  let countdownText = $state('');
-  let statusColor = $state('text-secondary');
-  let isNearStart = $state(false);
+  let isExpanded = $state(false)
+  let countdownText = $state('')
+  let statusColor = $state('text-secondary')
+  let isNearStart = $state(false)
 
   function toggleExpand(e: Event) {
-    e.stopPropagation();
-    isExpanded = !isExpanded;
+    e.stopPropagation()
+    isExpanded = !isExpanded
   }
 
   // Format date nicely (e.g. "Sat 14:00")
   function formatLocalTime(isoString: string) {
-    const d = new Date(isoString);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const d = new Date(isoString)
+    return d.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })
   }
 
   function formatLocalDate(isoString: string) {
-    const d = new Date(isoString);
-    return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    const d = new Date(isoString)
+    return d.toLocaleDateString([], {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    })
   }
 
   // Live countdown effect
   function updateCountdown() {
-    const start = new Date(session.start_time).getTime();
-    const now = new Date().getTime();
-    const diff = start - now;
+    const start = new Date(session.start_time).getTime()
+    const now = new Date().getTime()
+    const diff = start - now
 
     if (diff < 0) {
-      const activeDiff = now - start;
-      const durationMs = session.duration_minutes * 60 * 1000;
+      const activeDiff = now - start
+      const durationMs = session.duration_minutes * 60 * 1000
       if (activeDiff < durationMs) {
-        countdownText = 'Race in Progress';
-        statusColor = 'text-green';
-        isNearStart = true;
+        countdownText = 'Race in Progress'
+        statusColor = 'text-green'
+        isNearStart = true
       } else {
-        countdownText = 'Finished';
-        statusColor = 'text-muted';
-        isNearStart = false;
+        countdownText = 'Finished'
+        statusColor = 'text-muted'
+        isNearStart = false
       }
-      return;
+      return
     }
 
-    const totalSeconds = Math.floor(diff / 1000);
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const totalSeconds = Math.floor(diff / 1000)
+    const days = Math.floor(totalSeconds / 86400)
+    const hours = Math.floor((totalSeconds % 86400) / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
 
     if (days > 0) {
-      countdownText = `Starts in ${days}d ${hours}h`;
-      statusColor = 'text-secondary';
-      isNearStart = false;
+      countdownText = `Starts in ${days}d ${hours}h`
+      statusColor = 'text-secondary'
+      isNearStart = false
     } else if (hours > 0) {
-      countdownText = `Starts in ${hours}h ${minutes}m`;
-      statusColor = 'text-secondary';
-      isNearStart = hours === 0;
+      countdownText = `Starts in ${hours}h ${minutes}m`
+      statusColor = 'text-secondary'
+      isNearStart = hours === 0
     } else {
-      countdownText = `Starts in ${minutes}m`;
-      statusColor = 'text-primary-color';
-      isNearStart = true;
+      countdownText = `Starts in ${minutes}m`
+      statusColor = 'text-primary-color'
+      isNearStart = true
     }
   }
 
   onMount(() => {
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 30000); // update every 30s
-    return () => clearInterval(interval);
-  });
+    updateCountdown()
+    const interval = setInterval(updateCountdown, 30000) // update every 30s
+    return () => clearInterval(interval)
+  })
 </script>
 
-<div 
-  class="session-card glass-panel {isNearStart ? 'near-start' : ''} {isExpanded ? 'expanded' : ''}"
-  onclick={() => isExpanded = !isExpanded}
+<div
+  class="session-card glass-panel {isNearStart ? 'near-start' : ''} {isExpanded
+    ? 'expanded'
+    : ''}"
+  onclick={() => (isExpanded = !isExpanded)}
   role="button"
   tabindex="0"
   onkeydown={(e) => e.key === 'Enter' && (isExpanded = !isExpanded)}
@@ -124,10 +131,18 @@
 
     <div class="series-block">
       <div class="series-meta">
-        <span class="tag-category {session.category.toLowerCase().replace(' ', '-')}">
+        <span
+          class="tag-category {session.category
+            .toLowerCase()
+            .replace(' ', '-')}"
+        >
           {session.category}
         </span>
-        <span class="badge badge-license {session.license_group.toLowerCase().replace(' ', '-')}">
+        <span
+          class="badge badge-license {session.license_group
+            .toLowerCase()
+            .replace(' ', '-')}"
+        >
           {session.license_group}
         </span>
         {#if session.fixed_setup}
@@ -149,7 +164,11 @@
         <Clock size={14} />
         <span class="countdown-text">{countdownText}</span>
       </div>
-      <button class="expand-btn" onclick={toggleExpand} aria-label="Toggle details">
+      <button
+        class="expand-btn"
+        onclick={toggleExpand}
+        aria-label="Toggle details"
+      >
         {#if isExpanded}
           <ChevronUp size={20} />
         {:else}
@@ -388,7 +407,9 @@
     justify-content: center;
     padding: 4px;
     border-radius: 50%;
-    transition: background-color var(--transition-fast), color var(--transition-fast);
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast);
   }
 
   .expand-btn:hover {
@@ -405,8 +426,14 @@
   }
 
   @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .details-grid {

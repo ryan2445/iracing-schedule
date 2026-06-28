@@ -1,82 +1,84 @@
 <script lang="ts">
-  import SessionCard from './SessionCard.svelte';
-  import { Calendar, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-svelte';
+  import SessionCard from './SessionCard.svelte'
+  import { Calendar, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-svelte'
 
   interface Track {
-    track_id: number;
-    track_name: string;
-    config_name: string;
-    category: string;
+    track_id: number
+    track_name: string
+    config_name: string
+    category: string
   }
 
   interface Session {
-    session_id: string;
-    series_id: number;
-    series_name: string;
-    category: string;
-    license_group: string;
-    license_group_id: number;
-    fixed_setup: boolean;
-    cars: string[];
-    track: Track;
-    start_time: string;
-    duration_minutes: number;
-    duration_laps?: number | null;
+    session_id: string
+    series_id: number
+    series_name: string
+    category: string
+    license_group: string
+    license_group_id: number
+    fixed_setup: boolean
+    cars: string[]
+    track: Track
+    start_time: string
+    duration_minutes: number
+    duration_laps?: number | null
   }
 
   // Svelte 5 Props Rune
-  let { sessions } = $props<{ sessions: Session[] }>();
+  let { sessions } = $props<{ sessions: Session[] }>()
 
   // Svelte 5 State Runes
-  let selectedDayIndex = $state(0);
+  let selectedDayIndex = $state(0)
 
   // Generate the next 7 days in local time
   const days = $derived(
     Array.from({ length: 7 }, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() + i);
-      return d;
+      const d = new Date()
+      d.setDate(d.getDate() + i)
+      return d
     })
-  );
+  )
 
   // Helper to format days
   function formatDayLabel(d: Date) {
-    return d.toLocaleDateString([], { weekday: 'short' });
+    return d.toLocaleDateString([], { weekday: 'short' })
   }
 
   function formatDayNum(d: Date) {
-    return d.getDate();
+    return d.getDate()
   }
 
   function formatMonthLabel(d: Date) {
-    return d.toLocaleDateString([], { month: 'short' });
+    return d.toLocaleDateString([], { month: 'short' })
   }
 
   // Check if session start_time is on the same calendar day as the given Date object
   function isSameDay(sessionTimeStr: string, date: Date) {
-    const sessionDate = new Date(sessionTimeStr);
+    const sessionDate = new Date(sessionTimeStr)
     return (
       sessionDate.getFullYear() === date.getFullYear() &&
       sessionDate.getMonth() === date.getMonth() &&
       sessionDate.getDate() === date.getDate()
-    );
+    )
   }
 
   // Derived filtered sessions for the selected day
   const dailySessions = $derived(
-    sessions.filter((s: Session) => isSameDay(s.start_time, days[selectedDayIndex]))
-  );
+    sessions.filter((s: Session) =>
+      isSameDay(s.start_time, days[selectedDayIndex])
+    )
+  )
 
   // Pagination for fast rendering inside the calendar view
-  let limitCount = $state(100);
-  const displayedDailySessions = $derived(dailySessions.slice(0, limitCount));
+  let limitCount = $state(100)
+  const displayedDailySessions = $derived(dailySessions.slice(0, limitCount))
 
   $effect(() => {
     // Reset limit whenever sessions or selected day changes
-    sessions;
-    selectedDayIndex;
-    limitCount = 100;
-  });
+    sessions
+    selectedDayIndex
+    limitCount = 100
+  })
 </script>
 
 <div class="calendar-container glass-panel">
@@ -92,20 +94,20 @@
 
   <!-- Day Selection Track -->
   <div class="day-selector">
-    <button 
-      class="nav-arrow" 
-      disabled={selectedDayIndex === 0} 
+    <button
+      class="nav-arrow"
+      disabled={selectedDayIndex === 0}
       onclick={() => selectedDayIndex--}
       aria-label="Previous day"
     >
       <ChevronLeft size={18} />
     </button>
-    
+
     <div class="days-track">
       {#each days as day, index}
-        <button 
+        <button
           class="day-tab {index === selectedDayIndex ? 'active' : ''}"
-          onclick={() => selectedDayIndex = index}
+          onclick={() => (selectedDayIndex = index)}
         >
           <span class="day-name">{formatDayLabel(day)}</span>
           <span class="day-number">{formatDayNum(day)}</span>
@@ -114,9 +116,9 @@
       {/each}
     </div>
 
-    <button 
-      class="nav-arrow" 
-      disabled={selectedDayIndex === days.length - 1} 
+    <button
+      class="nav-arrow"
+      disabled={selectedDayIndex === days.length - 1}
       onclick={() => selectedDayIndex++}
       aria-label="Next day"
     >
@@ -127,14 +129,27 @@
   <!-- Daily Schedule linear timeline -->
   <div class="schedule-body">
     <div class="day-indicator">
-      <h4>{days[selectedDayIndex].toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h4>
-      <span class="badge badge-sessions-count">{dailySessions.length} Races Scheduled</span>
+      <h4>
+        {days[selectedDayIndex].toLocaleDateString([], {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        })}
+      </h4>
+      <span class="badge badge-sessions-count"
+        >{dailySessions.length} Races Scheduled</span
+      >
     </div>
 
     {#if dailySessions.length === 0}
       <div class="empty-schedule">
-        <p class="text-secondary">No races scheduled for this day matching your current filters.</p>
-        <p class="text-muted text-small">Try clearing some filters or searching for another series.</p>
+        <p class="text-secondary">
+          No races scheduled for this day matching your current filters.
+        </p>
+        <p class="text-muted text-small">
+          Try clearing some filters or searching for another series.
+        </p>
       </div>
     {:else}
       <div class="timeline-wrapper">
@@ -152,9 +167,11 @@
 
         {#if dailySessions.length > limitCount}
           <div class="load-more-container">
-            <button class="btn-load-more" onclick={() => limitCount += 100}>
+            <button class="btn-load-more" onclick={() => (limitCount += 100)}>
               <RefreshCw size={14} />
-              <span>Show More ({dailySessions.length - limitCount} remaining)</span>
+              <span
+                >Show More ({dailySessions.length - limitCount} remaining)</span
+              >
             </button>
           </div>
         {/if}
@@ -334,7 +351,7 @@
   .empty-schedule {
     padding: 40px 20px;
     text-align: center;
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     border: 1px dashed var(--border-color);
   }
@@ -356,7 +373,12 @@
     bottom: 10px;
     left: 4.5px;
     width: 2px;
-    background: linear-gradient(to bottom, var(--primary), var(--border-color) 40%, var(--border-color));
+    background: linear-gradient(
+      to bottom,
+      var(--primary),
+      var(--border-color) 40%,
+      var(--border-color)
+    );
   }
 
   .sessions-list {
