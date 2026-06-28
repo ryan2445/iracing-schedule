@@ -22,6 +22,8 @@
     start_time: string
     duration_minutes: number
     duration_laps?: number | null
+    team_racing?: boolean
+    min_drivers?: number | null
   }
 
   // Svelte 5 Props Rune

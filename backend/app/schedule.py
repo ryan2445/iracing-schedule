@@ -138,7 +138,26 @@ class ScheduleEngine:
                     continue
 
                 title = candidates[0]
-                cars_str = ", ".join(candidates[1:]) if len(candidates) > 1 else title
+
+                # Helper to join PDF line breaks correctly for wrapped text
+                def join_lines(lines: list[str]) -> str:
+                    if not lines:
+                        return ""
+                    joined = ""
+                    for line in lines:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        if not joined:
+                            joined = line
+                        else:
+                            if joined.endswith("-"):
+                                joined = joined + line
+                            else:
+                                joined = joined + " " + line
+                    return joined
+
+                cars_str = join_lines(candidates[1:]) if len(candidates) > 1 else title
 
                 # Format clean title
                 display_title = re.sub(
@@ -244,6 +263,16 @@ class ScheduleEngine:
                                 10, int((laps_val * lap_time_seconds) / 60)
                             )
 
+                        timeslot_time = None
+                        timeslot_re = re.compile(
+                            r"\((20\d{2}-\d{2}-\d{2}\s+\d{2}:\d{2})(?:\s+[^)]+)?\)"
+                        )
+                        for dl in detail_lines:
+                            t_match = timeslot_re.search(dl)
+                            if t_match:
+                                timeslot_time = t_match.group(1)
+                                break
+
                         weeks.append(
                             {
                                 "week": week_num,
@@ -252,8 +281,22 @@ class ScheduleEngine:
                                 "track_obj": track_obj,
                                 "duration_minutes": duration_minutes,
                                 "duration_laps": laps_val,
+                                "timeslot_time": timeslot_time,
                             }
                         )
+
+                is_team_racing = "team racing" in lic_line.lower()
+                min_drivers = None
+                if is_team_racing:
+                    series_lines_to_search = [
+                        all_text_lines[k].strip() for k in range(idx, next_idx)
+                    ]
+                    joined_series_text = " ".join(series_lines_to_search)
+                    match_drivers = re.search(
+                        r"Min\s+(\d+)\s+driver", joined_series_text, re.IGNORECASE
+                    )
+                    if match_drivers:
+                        min_drivers = int(match_drivers.group(1))
 
                 series_temp.append(
                     {
@@ -268,6 +311,8 @@ class ScheduleEngine:
                         "license_line": lic_line,
                         "schedule_line": all_text_lines[idx + 1].strip(),
                         "weeks": weeks,
+                        "team_racing": is_team_racing,
+                        "min_drivers": min_drivers,
                     }
                 )
 
@@ -350,11 +395,13 @@ class ScheduleEngine:
                     if d_name in part:
                         current_day = d_idx
                         break
-                hours = [int(h) for h in re.findall(r"\b\d+\b", part)]
-                if current_day is not None and hours:
-                    for h in hours:
-                        if h < 24:
-                            specific_slots.append((current_day, h, 0))
+                time_matches = re.findall(r"\b(\d{1,2})(?::(\d{2}))?\b", part)
+                if current_day is not None and time_matches:
+                    for h_str, m_str in time_matches:
+                        h = int(h_str)
+                        m = int(m_str) if m_str else 0
+                        if h < 24 and m < 60:
+                            specific_slots.append((current_day, h, m))
 
         if not specific_slots:
             if "30 minutes" in s or "thirty minutes" in s:
@@ -400,11 +447,14 @@ class ScheduleEngine:
                 else:
                     minutes = [0]
 
+        is_timeslot = "timeslot" in s
+
         return {
             "interval_hours": interval_hours,
             "even_hours": even_hours,
             "minutes": minutes,
             "specific_slots": specific_slots,
+            "is_timeslot": is_timeslot,
         }
 
     def generate_sessions_for_range(
@@ -415,7 +465,58 @@ class ScheduleEngine:
         """
         sessions: list[dict[str, Any]] = []
 
-        # Round start time to beginning of the hour for stepping
+        # Generate sessions for timeslot-based series first
+        for sr in self.series_rules:
+            s = sr["series"]
+            rule = sr["rule"]
+
+            if rule.get("is_timeslot"):
+                for w in s.get("weeks", []):
+                    ts_str = w.get("timeslot_time")
+                    if not ts_str:
+                        continue
+
+                    try:
+                        session_time = datetime.strptime(ts_str, "%Y-%m-%d %H:%M")
+                        if start_time.tzinfo is not None:
+                            session_time = session_time.replace(
+                                tzinfo=start_time.tzinfo
+                            )
+                    except Exception as e:
+                        logger.error(
+                            f"Error parsing timeslot time {ts_str} for series {s['series_name']}: {e}"
+                        )
+                        continue
+
+                    if start_time <= session_time <= end_time:
+                        track_obj = w.get("track_obj")
+                        if not track_obj:
+                            track_obj = {
+                                "track_id": 0,
+                                "track_name": "TBD",
+                                "config_name": "Full Course",
+                                "category": s["category"],
+                            }
+                        sessions.append(
+                            {
+                                "session_id": f"{s['series_id']}_{int(session_time.timestamp())}",
+                                "series_id": s["series_id"],
+                                "series_name": s["series_name"],
+                                "category": s["category"],
+                                "license_group": s["license_group"],
+                                "license_group_id": s["license_group_id"],
+                                "fixed_setup": s["fixed_setup"],
+                                "cars": s["cars"],
+                                "track": track_obj,
+                                "start_time": session_time.isoformat(),
+                                "duration_minutes": w.get("duration_minutes", 30),
+                                "duration_laps": w.get("duration_laps"),
+                                "team_racing": s.get("team_racing", False),
+                                "min_drivers": s.get("min_drivers"),
+                            }
+                        )
+
+        # Round start time to beginning of the hour for stepping normal hourly series
         current_hour = start_time.replace(minute=0, second=0, microsecond=0)
 
         while current_hour <= end_time:
@@ -426,6 +527,9 @@ class ScheduleEngine:
             for sr in self.series_rules:
                 s = sr["series"]
                 rule = sr["rule"]
+
+                if rule.get("is_timeslot"):
+                    continue
 
                 # Check schedule rule
                 matching_minutes = []
@@ -457,12 +561,29 @@ class ScheduleEngine:
                         duration_laps = None
                         if weeks:
                             # Weeks are sorted. Find largest week start date <= session_date_str
-                            selected_week = weeks[0]
+                            selected_week = None
                             for w in weeks:
                                 if w["date"] <= session_date_str:
                                     selected_week = w
                                 else:
                                     break
+
+                            if not selected_week:
+                                continue
+
+                            # Enforce 7-day active window limit for the week to prevent generation on gap/off-weeks
+                            week_start_dt = datetime.strptime(
+                                selected_week["date"], "%Y-%m-%d"
+                            )
+                            if start_time.tzinfo is not None:
+                                week_start_dt = week_start_dt.replace(
+                                    tzinfo=start_time.tzinfo
+                                )
+
+                            week_end_dt = week_start_dt + timedelta(days=7)
+                            if not (week_start_dt <= session_time < week_end_dt):
+                                continue
+
                             track_obj = selected_week.get("track_obj")
                             duration_minutes = selected_week.get("duration_minutes", 30)
                             duration_laps = selected_week.get("duration_laps", None)
@@ -489,6 +610,8 @@ class ScheduleEngine:
                                 "start_time": session_time.isoformat(),
                                 "duration_minutes": duration_minutes,
                                 "duration_laps": duration_laps,
+                                "team_racing": s.get("team_racing", False),
+                                "min_drivers": s.get("min_drivers"),
                             }
                         )
 

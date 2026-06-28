@@ -1,134 +1,146 @@
 <script lang="ts">
-  import { onMount, untrack } from 'svelte';
-  import { 
-    Activity, 
-    List, 
-    Calendar as CalendarIcon, 
-    Info, 
-    AlertTriangle, 
-    RefreshCw, 
-    Zap, 
-    Gauge, 
-    Clock, 
+  import { onMount, untrack } from 'svelte'
+  import {
+    Activity,
+    List,
+    Calendar as CalendarIcon,
+    Info,
+    AlertTriangle,
+    RefreshCw,
+    Gauge,
+    Clock,
     ArrowUp,
     ArrowDown,
     SlidersHorizontal
-  } from 'lucide-svelte';
-  import Filters from './lib/Filters.svelte';
-  import SessionCard from './lib/SessionCard.svelte';
-  import CalendarView from './lib/CalendarView.svelte';
+  } from 'lucide-svelte'
+  import Filters from './lib/Filters.svelte'
+  import SessionCard from './lib/SessionCard.svelte'
+  import CalendarView from './lib/CalendarView.svelte'
 
   // Svelte 5 Types
   interface Track {
-    track_id: number;
-    track_name: string;
-    config_name: string;
-    category: string;
+    track_id: number
+    track_name: string
+    config_name: string
+    category: string
   }
 
   interface Session {
-    session_id: string;
-    series_id: number;
-    series_name: string;
-    category: string;
-    license_group: string;
-    license_group_id: number;
-    fixed_setup: boolean;
-    cars: string[];
-    track: Track;
-    start_time: string;
-    duration_minutes: number;
-    duration_laps?: number | null;
+    session_id: string
+    series_id: number
+    series_name: string
+    category: string
+    license_group: string
+    license_group_id: number
+    fixed_setup: boolean
+    cars: string[]
+    track: Track
+    start_time: string
+    duration_minutes: number
+    duration_laps?: number | null
+    team_racing?: boolean
+    min_drivers?: number | null
   }
 
   interface APIStatus {
-    status: string;
-    mock_mode: boolean;
-    username: string;
-    time_utc: string;
+    status: string
+    mock_mode: boolean
+    username: string
+    time_utc: string
   }
 
   // Svelte 5 State Runes
-  let currentView = $state<'list' | 'calendar'>('list');
-  let apiStatus = $state<APIStatus | null>(null);
-  
+  let currentView = $state<'list' | 'calendar'>('list')
+  let apiStatus = $state<APIStatus | null>(null)
+
   // Available filter options fetched on mount
-  let categories = $state<string[]>([]);
-  
+  let categories = $state<string[]>([])
+
   // Filter bindings
-  let searchQuery = $state('');
-  let selectedCategories = $state<string[]>([]);
+  let searchQuery = $state('')
+  let selectedCategories = $state<string[]>([])
 
   // Sorting bindings
-  type SortField = 'start_time' | 'series_name' | 'category' | 'license_group_id' | 'duration_minutes' | 'track_name' | 'fixed_setup';
-  let sortBy = $state<SortField>('start_time');
-  let sortOrder = $state<'asc' | 'desc'>('asc');
+  type SortField =
+    | 'start_time'
+    | 'series_name'
+    | 'category'
+    | 'license_group_id'
+    | 'duration_minutes'
+    | 'track_name'
+    | 'fixed_setup'
+  let sortBy = $state<SortField>('start_time')
+  let sortOrder = $state<'asc' | 'desc'>('asc')
 
   // Loaded sessions list
-  let sessions = $state<Session[]>([]);
-  let isLoadingSessions = $state(false);
-  let sessionFetchError = $state('');
+  let sessions = $state<Session[]>([])
+  let isLoadingSessions = $state(false)
+  let sessionFetchError = $state('')
 
   // Pagination / Limiting for ultra-fast rendering performance
-  let limitCount = $state(100);
+  let limitCount = $state(100)
 
   // Filter sessions to only keep the next upcoming timeslot for each series
   const nextUpcomingSessions = $derived.by(() => {
-    const minSessionsMap = new Map<number, Session>();
+    const minSessionsMap = new Map<number, Session>()
     for (const session of sessions) {
-      const existing = minSessionsMap.get(session.series_id);
-      if (!existing || new Date(session.start_time) < new Date(existing.start_time)) {
-        minSessionsMap.set(session.series_id, session);
+      const existing = minSessionsMap.get(session.series_id)
+      if (
+        !existing ||
+        new Date(session.start_time) < new Date(existing.start_time)
+      ) {
+        minSessionsMap.set(session.series_id, session)
       }
     }
-    return Array.from(minSessionsMap.values());
-  });
+    return Array.from(minSessionsMap.values())
+  })
 
   // Sorting logic using Svelte 5 fine-grained derived rune
   const sortedSessions = $derived.by(() => {
-    const list = [...nextUpcomingSessions];
+    const list = [...nextUpcomingSessions]
     list.sort((a, b) => {
-      let valA: any;
-      let valB: any;
+      let valA: any
+      let valB: any
 
       if (sortBy === 'track_name') {
-        valA = a.track?.track_name || '';
-        valB = b.track?.track_name || '';
+        valA = a.track?.track_name || ''
+        valB = b.track?.track_name || ''
       } else {
-        valA = a[sortBy];
-        valB = b[sortBy];
+        valA = a[sortBy]
+        valB = b[sortBy]
       }
 
       if (typeof valA === 'string') {
-        valA = valA.toLowerCase();
-        valB = (valB || '').toLowerCase();
+        valA = valA.toLowerCase()
+        valB = (valB || '').toLowerCase()
       }
 
-      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
-      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
-    });
-    return list;
-  });
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1
+      return 0
+    })
+    return list
+  })
 
-  const displayedSessions = $derived(sortedSessions.slice(0, limitCount));
+  const displayedSessions = $derived(sortedSessions.slice(0, limitCount))
 
   $effect(() => {
     // Reset limitCount whenever sessions array changes (e.g. filters applied)
-    sessions;
-    limitCount = 100;
-  });
+    sessions
+    limitCount = 100
+  })
 
   // Dashboard Stats
-  const activeSeriesCount = $derived(new Set(sessions.map(s => s.series_id)).size);
-  
-  const startingSoonCount = $derived(
-    sessions.filter(s => {
-      const diff = new Date(s.start_time).getTime() - new Date().getTime();
-      return diff > 0 && diff <= 30 * 60 * 1000; // in next 30 minutes
-    }).length
-  );
+  const activeSeriesCount = $derived(
+    new Set(sessions.map((s) => s.series_id)).size
+  )
 
+  const startingSoonCount = $derived(
+    sessions.filter((s) => {
+      const diff = new Date(s.start_time).getTime() - new Date().getTime()
+      return diff > 0 && diff <= 30 * 60 * 1000 // in next 30 minutes
+    }).length
+  )
 
   // Fetch meta-information from the backend API
   async function fetchMetadata() {
@@ -136,77 +148,77 @@
       const [statusRes, catRes] = await Promise.all([
         fetch('http://localhost:8000/api/status'),
         fetch('http://localhost:8000/api/categories')
-      ]);
+      ])
 
-      if (statusRes.ok) apiStatus = await statusRes.json();
-      if (catRes.ok) categories = await catRes.json();
+      if (statusRes.ok) apiStatus = await statusRes.json()
+      if (catRes.ok) categories = await catRes.json()
     } catch (e) {
-      console.error('Failed to load initial metadata', e);
+      console.error('Failed to load initial metadata', e)
     }
   }
 
   // Fetch filtered sessions from the backend API
   async function fetchSessions() {
-    isLoadingSessions = true;
-    sessionFetchError = '';
+    isLoadingSessions = true
+    sessionFetchError = ''
 
     try {
-      const url = new URL('http://localhost:8000/api/sessions');
-      
+      const url = new URL('http://localhost:8000/api/sessions')
+
       // Append query filters
       if (searchQuery) {
-        url.searchParams.append('search', searchQuery);
+        url.searchParams.append('search', searchQuery)
       }
-      
+
       // Append array filters (multi-value query params)
-      selectedCategories.forEach(cat => {
-        url.searchParams.append('category', cat);
-      });
+      selectedCategories.forEach((cat) => {
+        url.searchParams.append('category', cat)
+      })
 
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString())
       if (!response.ok) {
-        throw new Error(`Failed to load sessions: ${response.statusText}`);
+        throw new Error(`Failed to load sessions: ${response.statusText}`)
       }
 
-      sessions = await response.json();
+      sessions = await response.json()
     } catch (err: any) {
-      sessionFetchError = err.message || 'Error connecting to the API.';
+      sessionFetchError = err.message || 'Error connecting to the API.'
     } finally {
-      isLoadingSessions = false;
+      isLoadingSessions = false
     }
   }
 
   // Svelte 5 fine-grained reactive effect to reload sessions when filters change
   $effect(() => {
     // This will trigger automatically when any of these state variables change
-    searchQuery;
-    selectedCategories;
-    
+    searchQuery
+    selectedCategories
+
     untrack(() => {
-      fetchSessions();
-    });
-  });
+      fetchSessions()
+    })
+  })
 
   function handleSortChange(fieldId: SortField) {
     if (sortBy === fieldId) {
-      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
     } else {
-      sortBy = fieldId;
+      sortBy = fieldId
       if (fieldId === 'start_time') {
-        sortOrder = 'desc';
+        sortOrder = 'desc'
       } else {
-        sortOrder = 'asc';
+        sortOrder = 'asc'
       }
     }
   }
 
   function toggleSortOrder() {
-    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
   }
 
   onMount(() => {
-    fetchMetadata();
-  });
+    fetchMetadata()
+  })
 </script>
 
 <div class="bg-glow-effect"></div>
@@ -223,16 +235,16 @@
   </div>
 
   <div class="view-switcher-tabs">
-    <button 
-      class="tab-btn {currentView === 'list' ? 'active' : ''}" 
-      onclick={() => currentView = 'list'}
+    <button
+      class="tab-btn {currentView === 'list' ? 'active' : ''}"
+      onclick={() => (currentView = 'list')}
     >
       <List size={16} />
       <span>Linear Timeline</span>
     </button>
-    <button 
-      class="tab-btn {currentView === 'calendar' ? 'active' : ''}" 
-      onclick={() => currentView = 'calendar'}
+    <button
+      class="tab-btn {currentView === 'calendar' ? 'active' : ''}"
+      onclick={() => (currentView = 'calendar')}
     >
       <CalendarIcon size={16} />
       <span>Calendar Planner</span>
@@ -264,7 +276,7 @@
   </section>
 
   <!-- Shared Filter Dashboard Component -->
-  <Filters 
+  <Filters
     bind:search={searchQuery}
     bind:selectedCategories
     availableCategories={categories}
@@ -291,7 +303,9 @@
     <div class="linear-schedule-container">
       <div class="view-header">
         <h2>Live Race Grid</h2>
-        <span class="badge badge-sessions-count">{nextUpcomingSessions.length} upcoming sessions found</span>
+        <span class="badge badge-sessions-count"
+          >{nextUpcomingSessions.length} upcoming sessions found</span
+        >
       </div>
 
       <!-- Premium Sort Toolbar -->
@@ -301,17 +315,9 @@
           <span class="sort-title">Sort Grid:</span>
         </div>
         <div class="sort-pills-container">
-          {#each [
-            { id: 'start_time', label: 'Start Time' },
-            { id: 'series_name', label: 'Series Name' },
-            { id: 'category', label: 'Category' },
-            { id: 'license_group_id', label: 'License' },
-            { id: 'duration_minutes', label: 'Duration' },
-            { id: 'track_name', label: 'Track' },
-            { id: 'fixed_setup', label: 'Setup' }
-          ] as field}
-            <button 
-              class="sort-pill-btn {sortBy === field.id ? 'active' : ''}" 
+          {#each [{ id: 'start_time', label: 'Start Time' }, { id: 'series_name', label: 'Series Name' }, { id: 'category', label: 'Category' }, { id: 'license_group_id', label: 'License' }, { id: 'duration_minutes', label: 'Duration' }, { id: 'track_name', label: 'Track' }, { id: 'fixed_setup', label: 'Setup' }] as field}
+            <button
+              class="sort-pill-btn {sortBy === field.id ? 'active' : ''}"
               onclick={() => handleSortChange(field.id as SortField)}
             >
               <span>{field.label}</span>
@@ -323,7 +329,11 @@
             </button>
           {/each}
         </div>
-        <button class="sort-order-toggle" onclick={toggleSortOrder} aria-label="Toggle sorting order">
+        <button
+          class="sort-order-toggle"
+          onclick={toggleSortOrder}
+          aria-label="Toggle sorting order"
+        >
           {#if sortOrder === 'asc'}
             <ArrowUp size={12} />
             <span>Ascending</span>
@@ -338,7 +348,10 @@
         <div class="empty-state glass-panel">
           <Info size={32} class="text-secondary" />
           <h3>No Match Found</h3>
-          <p>No active series match your search query or selected criteria. Try resetting filters.</p>
+          <p>
+            No active series match your search query or selected criteria. Try
+            resetting filters.
+          </p>
         </div>
       {:else}
         <div class="sessions-vertical-stack">
@@ -349,9 +362,11 @@
 
         {#if nextUpcomingSessions.length > limitCount}
           <div class="load-more-container">
-            <button class="btn-load-more" onclick={() => limitCount += 100}>
+            <button class="btn-load-more" onclick={() => (limitCount += 100)}>
               <RefreshCw size={14} />
-              <span>Show More ({nextUpcomingSessions.length - limitCount} remaining)</span>
+              <span
+                >Show More ({nextUpcomingSessions.length - limitCount} remaining)</span
+              >
             </button>
           </div>
         {/if}
@@ -364,7 +379,10 @@
 </main>
 
 <footer>
-  <p class="footer-text">iRacing Race Tracker is an independent dashboard. Track schedules and metadata are subject to change by iRacing.com.</p>
+  <p class="footer-text">
+    iRacing Race Tracker is an independent dashboard. Track schedules and
+    metadata are subject to change by iRacing.com.
+  </p>
 </footer>
 
 <style>
@@ -410,8 +428,12 @@
   }
 
   @keyframes pulseGlow {
-    0% { box-shadow: 0 0 10px var(--primary-glow); }
-    100% { box-shadow: 0 0 22px rgba(243, 18, 58, 0.6); }
+    0% {
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+    100% {
+      box-shadow: 0 0 22px rgba(243, 18, 58, 0.6);
+    }
   }
 
   .title-block {
@@ -521,7 +543,6 @@
     background-color: rgba(57, 255, 20, 0.1);
     color: var(--accent-green);
   }
-
 
   .metric-content {
     display: flex;

@@ -6,7 +6,8 @@
     Car,
     ChevronDown,
     ChevronUp,
-    Award
+    Award,
+    Users
   } from 'lucide-svelte'
 
   // Svelte 5 Runes for Props
@@ -30,6 +31,8 @@
     start_time: string
     duration_minutes: number
     duration_laps?: number | null
+    team_racing?: boolean
+    min_drivers?: number | null
   }
 
   let { session } = $props<{ session: Session }>()
@@ -150,6 +153,16 @@
         {:else}
           <span class="badge badge-setup open">Open</span>
         {/if}
+        {#if session.team_racing}
+          <span
+            class="badge badge-team"
+            title="Team Series (Min {session.min_drivers ||
+              1} {session.min_drivers === 1 ? 'driver' : 'drivers'})"
+          >
+            <Users size={11} />
+            <span>Team (Min {session.min_drivers || 1})</span>
+          </span>
+        {/if}
       </div>
       <h3 class="series-name">{session.series_name}</h3>
       <div class="track-info">
@@ -209,6 +222,15 @@
                 {/if}
               </span>
             </div>
+            {#if session.team_racing}
+              <div class="stat-item">
+                <span class="stat-label">Team Event</span>
+                <span class="stat-value">
+                  Yes ({session.min_drivers || 1}
+                  {session.min_drivers === 1 ? 'Driver' : 'Drivers'} Min)
+                </span>
+              </div>
+            {/if}
           </div>
         </div>
       </div>
@@ -322,6 +344,25 @@
     background-color: rgba(255, 255, 255, 0.05);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
+  }
+
+  .badge-team {
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    background: linear-gradient(
+      135deg,
+      rgba(168, 85, 247, 0.15) 0%,
+      rgba(236, 72, 153, 0.15) 100%
+    );
+    color: #f472b6;
+    border: 1px solid rgba(236, 72, 153, 0.35);
+    text-shadow: 0 0 8px rgba(236, 72, 153, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .series-name {
@@ -492,7 +533,7 @@
 
   .stats-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 10px;
   }
 
