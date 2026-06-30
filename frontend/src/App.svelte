@@ -2,8 +2,6 @@
   import { onMount, untrack } from 'svelte'
   import {
     Activity,
-    List,
-    Calendar as CalendarIcon,
     Info,
     AlertTriangle,
     RefreshCw,
@@ -15,33 +13,8 @@
   } from 'lucide-svelte'
   import Filters from './lib/Filters.svelte'
   import SessionCard from './lib/SessionCard.svelte'
-  import CalendarView from './lib/CalendarView.svelte'
   import { generateSessionsForRange, getCategories } from './lib/scheduleEngine'
-
-  // Svelte 5 Types
-  interface Track {
-    track_id: number
-    track_name: string
-    config_name: string
-    category: string
-  }
-
-  interface Session {
-    session_id: string
-    series_id: number
-    series_name: string
-    category: string
-    license_group: string
-    license_group_id: number
-    fixed_setup: boolean
-    cars: string[]
-    track: Track
-    start_time: string
-    duration_minutes: number
-    duration_laps?: number | null
-    team_racing?: boolean
-    min_drivers?: number | null
-  }
+  import type { Session, Track } from './lib/scheduleEngine'
 
   // Svelte 5 State Runes
   let currentView = $state<'list' | 'calendar'>('list')
@@ -227,25 +200,7 @@
     </div>
     <div class="title-block">
       <h1>iRacing Race Tracker</h1>
-      <p class="title-sub">Ultimate Live Schedule & Series Planner</p>
     </div>
-  </div>
-
-  <div class="view-switcher-tabs">
-    <button
-      class="tab-btn {currentView === 'list' ? 'active' : ''}"
-      onclick={() => (currentView = 'list')}
-    >
-      <List size={16} />
-      <span>Linear Timeline</span>
-    </button>
-    <button
-      class="tab-btn {currentView === 'calendar' ? 'active' : ''}"
-      onclick={() => (currentView = 'calendar')}
-    >
-      <CalendarIcon size={16} />
-      <span>Calendar Planner</span>
-    </button>
   </div>
 </header>
 
@@ -369,18 +324,8 @@
         {/if}
       {/if}
     </div>
-  {:else}
-    <!-- Calendar Weekly View -->
-    <CalendarView {sessions} />
   {/if}
 </main>
-
-<footer>
-  <p class="footer-text">
-    iRacing Race Tracker is an independent dashboard. Track schedules and
-    metadata are subject to change by iRacing.com.
-  </p>
-</footer>
 
 <style>
   /* App Header Styles */
@@ -399,9 +344,6 @@
       align-items: flex-start;
       gap: 16px;
       padding: 24px 0 16px;
-    }
-    .view-switcher-tabs {
-      width: 100%;
     }
   }
 
@@ -446,58 +388,6 @@
     background: linear-gradient(to right, #fff, var(--text-secondary));
     background-clip: text;
     -webkit-text-fill-color: transparent;
-  }
-
-  .title-sub {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-top: 2px;
-  }
-
-  /* Segment Tabs view switcher */
-  .view-switcher-tabs {
-    display: flex;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 4px;
-  }
-
-  .tab-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-family: var(--sans);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-  }
-
-  @media (max-width: 900px) {
-    .tab-btn {
-      flex: 1;
-      justify-content: center;
-    }
-  }
-
-  .tab-btn:hover {
-    color: var(--text-primary);
-  }
-
-  .tab-btn.active {
-    background-color: var(--bg-surface-elevated);
-    color: #fff;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
   }
 
   /* Dashboard Stats Grid (Modified to 2 Columns) */
@@ -745,21 +635,5 @@
     background-color: rgba(243, 18, 58, 0.05);
     color: #fff;
     box-shadow: 0 4px 15px rgba(243, 18, 58, 0.15);
-  }
-
-  /* Footer */
-  footer {
-    border-top: 1px solid var(--border-color);
-    padding: 24px 0 40px;
-    margin-top: 60px;
-    text-align: center;
-  }
-
-  .footer-text {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.5;
   }
 </style>

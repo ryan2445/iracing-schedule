@@ -7,41 +7,74 @@
     ChevronDown,
     ChevronUp,
     Award,
-    Users
+    Users,
+    Calendar
   } from 'lucide-svelte'
+  import type { Session } from './scheduleEngine'
 
-  // Svelte 5 Runes for Props
-  interface Track {
-    track_id: number
-    track_name: string
-    config_name: string
-    category: string
-  }
-
-  interface Session {
-    session_id: string
-    series_id: number
-    series_name: string
-    category: string
-    license_group: string
-    license_group_id: number
-    fixed_setup: boolean
-    cars: string[]
-    track: Track
-    start_time: string
-    duration_minutes: number
-    duration_laps?: number | null
-    team_racing?: boolean
-    min_drivers?: number | null
-  }
-
-  let { session } = $props<{ session: Session }>()
+  let { session }: { session: Session } = $props<{ session: Session }>()
 
   // Svelte 5 State Runes
   let isExpanded = $state(false)
   let countdownText = $state('')
   let statusColor = $state('text-secondary')
   let isNearStart = $state(false)
+
+  // Format specific slots to local timezone, sort, and group them by day
+  const formattedLocalSlots = $derived.by(() => {
+    if (
+      !session.rule ||
+      !session.rule.specific_slots ||
+      session.rule.specific_slots.length === 0
+    ) {
+      return null
+    }
+
+    const slots = session.rule.specific_slots.map(
+      ([utcDay, utcHour, utcMin]: [number, number, number]) => {
+        // June 1, 2026 is a Monday (UTC)
+        const d = new Date(Date.UTC(2026, 5, 1 + utcDay, utcHour, utcMin))
+        const localDayNum = d.getDay() // 0 = Sun, 1 = Mon, ..., 6 = Sat
+        const sortDayNum = localDayNum === 0 ? 6 : localDayNum - 1 // Mon = 0, ..., Sun = 6
+        const dayName = d.toLocaleDateString([], { weekday: 'long' })
+        const timeStr = d.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        })
+
+        return {
+          sortDayNum,
+          dayName,
+          timeStr,
+          sortTime: d.getHours() * 60 + d.getMinutes()
+        }
+      }
+    )
+
+    // Sort chronologically (by day, then by time)
+    slots.sort((a: any, b: any) => {
+      if (a.sortDayNum !== b.sortDayNum) {
+        return a.sortDayNum - b.sortDayNum
+      }
+      return a.sortTime - b.sortTime
+    })
+
+    // Group by day name
+    const groups: { day: string; times: string[] }[] = []
+    for (const slot of slots) {
+      let group = groups.find((g) => g.day === slot.dayName)
+      if (!group) {
+        group = { day: slot.dayName, times: [] }
+        groups.push(group)
+      }
+      if (!group.times.includes(slot.timeStr)) {
+        group.times.push(slot.timeStr)
+      }
+    }
+
+    return groups
+  })
 
   function toggleExpand(e: Event) {
     e.stopPropagation()
@@ -229,6 +262,36 @@
                   Yes ({session.min_drivers || 1}
                   {session.min_drivers === 1 ? 'Driver' : 'Drivers'} Min)
                 </span>
+              </div>
+            {/if}
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4 class="section-title">
+            <Calendar size={15} />
+            <span>Series Schedule</span>
+          </h4>
+          <div class="schedule-card">
+            {#if session.schedule_line}
+              <div class="schedule-line">{session.schedule_line}</div>
+            {:else}
+              <div class="schedule-line text-muted">
+                No schedule line available
+              </div>
+            {/if}
+
+            {#if formattedLocalSlots && formattedLocalSlots.length > 0}
+              <div class="local-slots-wrapper">
+                <span class="local-slots-title">Your Local Timeslots</span>
+                <div class="local-slots-grid">
+                  {#each formattedLocalSlots as group}
+                    <div class="local-slot-item">
+                      <span class="slot-day">{group.day}</span>
+                      <span class="slot-times">{group.times.join(', ')}</span>
+                    </div>
+                  {/each}
+                </div>
               </div>
             {/if}
           </div>
@@ -479,8 +542,14 @@
 
   .details-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1.2fr 1fr 1.2fr;
     gap: 24px;
+  }
+
+  @media (max-width: 1024px) {
+    .details-grid {
+      grid-template-columns: 1.2fr 1fr;
+    }
   }
 
   @media (max-width: 768px) {
@@ -558,5 +627,87 @@
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-primary);
+  }
+
+  /* Schedule Styles */
+  .schedule-card {
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .schedule-line {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .local-slots-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 10px;
+  }
+
+  .local-slots-title {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .local-slots-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  /* Customize scrollbar for premium feel */
+  .local-slots-grid::-webkit-scrollbar {
+    width: 4px;
+  }
+  .local-slots-grid::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .local-slots-grid::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 2px;
+  }
+
+  .local-slot-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    background-color: rgba(255, 255, 255, 0.02);
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: border-color var(--transition-fast);
+  }
+
+  .local-slot-item:hover {
+    border-color: rgba(243, 18, 58, 0.15);
+  }
+
+  .slot-day {
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .slot-times {
+    color: var(--primary);
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(243, 18, 58, 0.15);
   }
 </style>

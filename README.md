@@ -47,8 +47,6 @@ npm install
 npm run dev
 ```
 
-The frontend will start at `http://localhost:5173`. Open it in your browser and enjoy the ultimate sim-racing tracker!
-
 ---
 
 ## Static Production Build & AWS Deployment
