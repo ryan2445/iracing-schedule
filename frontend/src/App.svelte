@@ -281,19 +281,6 @@
             </button>
           {/each}
         </div>
-        <button
-          class="sort-order-toggle"
-          onclick={toggleSortOrder}
-          aria-label="Toggle sorting order"
-        >
-          {#if sortOrder === 'asc'}
-            <ArrowUp size={12} />
-            <span>Ascending</span>
-          {:else}
-            <ArrowDown size={12} />
-            <span>Descending</span>
-          {/if}
-        </button>
       </div>
 
       {#if nextUpcomingSessions.length === 0}
@@ -529,27 +516,6 @@
   .sort-dir-arrow {
     font-size: 0.8rem;
     font-weight: 700;
-  }
-
-  .sort-order-toggle {
-    background-color: var(--bg-surface-elevated);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all var(--transition-normal);
-  }
-
-  .sort-order-toggle:hover {
-    border-color: rgba(243, 18, 58, 0.4);
-    background-color: rgba(243, 18, 58, 0.05);
-    color: #fff;
   }
 
   /* Linear View Header */
