@@ -184,6 +184,9 @@
   .search-input-wrapper {
     position: relative;
     width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 
   .search-icon {

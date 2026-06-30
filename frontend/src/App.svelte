@@ -16,6 +16,7 @@
   import Filters from './lib/Filters.svelte'
   import SessionCard from './lib/SessionCard.svelte'
   import CalendarView from './lib/CalendarView.svelte'
+  import { generateSessionsForRange, getCategories } from './lib/scheduleEngine'
 
   // Svelte 5 Types
   interface Track {
@@ -42,16 +43,8 @@
     min_drivers?: number | null
   }
 
-  interface APIStatus {
-    status: string
-    mock_mode: boolean
-    username: string
-    time_utc: string
-  }
-
   // Svelte 5 State Runes
   let currentView = $state<'list' | 'calendar'>('list')
-  let apiStatus = $state<APIStatus | null>(null)
 
   // Available filter options fetched on mount
   let categories = $state<string[]>([])
@@ -142,47 +135,51 @@
     }).length
   )
 
-  // Fetch meta-information from the backend API
+  // Fetch meta-information from the client-side schedule engine
   async function fetchMetadata() {
     try {
-      const [statusRes, catRes] = await Promise.all([
-        fetch('http://localhost:8000/api/status'),
-        fetch('http://localhost:8000/api/categories')
-      ])
-
-      if (statusRes.ok) apiStatus = await statusRes.json()
-      if (catRes.ok) categories = await catRes.json()
+      categories = getCategories()
     } catch (e) {
       console.error('Failed to load initial metadata', e)
     }
   }
 
-  // Fetch filtered sessions from the backend API
+  // Fetch filtered sessions from the client-side schedule engine
   async function fetchSessions() {
     isLoadingSessions = true
     sessionFetchError = ''
 
     try {
-      const url = new URL('http://localhost:8000/api/sessions')
+      const now = new Date()
+      // Generate sessions for the next 7 days
+      const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+      let allSessions = generateSessionsForRange(now, end)
 
-      // Append query filters
+      // Apply category filter
+      if (selectedCategories.length > 0) {
+        allSessions = allSessions.filter((s) =>
+          selectedCategories.includes(s.category)
+        )
+      }
+
+      // Apply search query filter (series, track or cars)
       if (searchQuery) {
-        url.searchParams.append('search', searchQuery)
+        const query = searchQuery.toLowerCase()
+        allSessions = allSessions.filter((s) => {
+          const seriesMatch = s.series_name.toLowerCase().includes(query)
+          const trackMatch =
+            s.track.track_name.toLowerCase().includes(query) ||
+            s.track.config_name.toLowerCase().includes(query)
+          const carMatch = s.cars.some((car) =>
+            car.toLowerCase().includes(query)
+          )
+          return seriesMatch || trackMatch || carMatch
+        })
       }
 
-      // Append array filters (multi-value query params)
-      selectedCategories.forEach((cat) => {
-        url.searchParams.append('category', cat)
-      })
-
-      const response = await fetch(url.toString())
-      if (!response.ok) {
-        throw new Error(`Failed to load sessions: ${response.statusText}`)
-      }
-
-      sessions = await response.json()
+      sessions = allSessions
     } catch (err: any) {
-      sessionFetchError = err.message || 'Error connecting to the API.'
+      sessionFetchError = err.message || 'Error generating sessions.'
     } finally {
       isLoadingSessions = false
     }
