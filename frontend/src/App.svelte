@@ -270,7 +270,7 @@
   }
 
   .logo-glow {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
     color: #fff;
     width: 48px;
     height: 48px;
@@ -278,7 +278,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 15px var(--primary-glow);
+    box-shadow: 0 0 18px var(--primary-glow);
     animation: pulseGlow 3s ease-in-out infinite alternate;
   }
 
@@ -287,7 +287,7 @@
       box-shadow: 0 0 10px var(--primary-glow);
     }
     100% {
-      box-shadow: 0 0 22px rgba(243, 18, 58, 0.6);
+      box-shadow: 0 0 24px rgba(168, 85, 247, 0.75);
     }
   }
 
@@ -301,7 +301,7 @@
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.03em;
-    background: linear-gradient(to right, #fff, var(--text-secondary));
+    background: linear-gradient(to right, #ffffff, #c4b5fd, #a855f7);
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -513,9 +513,9 @@
   }
 
   .btn-load-more:hover {
-    border-color: rgba(243, 18, 58, 0.4);
-    background-color: rgba(243, 18, 58, 0.05);
+    border-color: rgba(168, 85, 247, 0.5);
+    background-color: rgba(168, 85, 247, 0.1);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(243, 18, 58, 0.15);
+    box-shadow: 0 4px 18px rgba(168, 85, 247, 0.25);
   }
 </style>

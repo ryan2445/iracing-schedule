@@ -1,55 +1,56 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Color Palette */
-  --bg-main: #06070d;
-  --bg-surface: #10121d;
-  --bg-surface-elevated: #181b2c;
-  --bg-surface-glass: rgba(16, 18, 29, 0.7);
+  /* Dark Purple Palette */
+  --bg-main: #0a0614;
+  --bg-surface: #130d24;
+  --bg-surface-elevated: #1c1436;
+  --bg-surface-glass: rgba(19, 13, 36, 0.75);
 
-  --border-color: #22263a;
-  --border-color-glow: rgba(243, 18, 58, 0.2);
+  --border-color: #2e214d;
+  --border-color-glow: rgba(168, 85, 247, 0.25);
 
-  /* Brand colors */
-  --primary: #f3123a;
-  --primary-hover: #ff3355;
-  --primary-glow: rgba(243, 18, 58, 0.4);
+  /* Brand colors - Purple Theme */
+  --primary: #a855f7;
+  --primary-hover: #c084fc;
+  --primary-glow: rgba(168, 85, 247, 0.45);
 
-  --accent-cyan: #00f0ff;
-  --accent-cyan-glow: rgba(0, 240, 255, 0.3);
+  --accent-purple-light: #e9d5ff;
+  --accent-cyan: #38bdf8;
+  --accent-cyan-glow: rgba(56, 189, 248, 0.3);
 
-  --accent-green: #39ff14;
-  --accent-green-glow: rgba(57, 255, 20, 0.3);
+  --accent-green: #34d399;
+  --accent-green-glow: rgba(52, 211, 153, 0.3);
 
   /* Category colors */
-  --color-sports-car: #ff007f;
-  --color-formula-car: #00f0ff;
-  --color-oval: #ffaa00;
-  --color-dirt-oval: #8b5a2b;
-  --color-dirt-road: #00ff66;
+  --color-sports-car: #c084fc;
+  --color-formula-car: #38bdf8;
+  --color-oval: #f59e0b;
+  --color-dirt-oval: #a16207;
+  --color-dirt-road: #34d399;
 
   /* License Group Colors */
-  --license-rookie: #ff1a1a;
-  --license-d: #ff8000;
-  --license-c: #ffff00;
-  --license-b: #00ff00;
-  --license-a: #0080ff;
+  --license-rookie: #f43f5e;
+  --license-d: #fb923c;
+  --license-c: #facc15;
+  --license-b: #4ade80;
+  --license-a: #60a5fa;
   --license-pro: #000000;
 
   /* Text */
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-primary: #f5f3ff;
+  --text-secondary: #a78bfa;
+  --text-muted: #7165a0;
 
   /* Fonts */
   --sans: 'Outfit', system-ui, -apple-system, sans-serif;
   --mono: ui-monospace, monospace;
 
   /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(243, 18, 58, 0.25);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(10, 6, 20, 0.5);
+  --shadow-lg: 0 12px 24px rgba(10, 6, 20, 0.7);
+  --shadow-glow: 0 0 20px rgba(168, 85, 247, 0.3);
 
   /* Animations */
   --transition-fast: 0.15s ease;
@@ -113,7 +114,7 @@ body {
   height: 50%;
   background: radial-gradient(
     circle,
-    rgba(243, 18, 58, 0.1) 0%,
+    rgba(168, 85, 247, 0.18) 0%,
     rgba(0, 0, 0, 0) 70%
   );
   filter: blur(80px);
@@ -129,7 +130,7 @@ body {
   height: 60%;
   background: radial-gradient(
     circle,
-    rgba(0, 240, 255, 0.08) 0%,
+    rgba(129, 140, 248, 0.12) 0%,
     rgba(0, 0, 0, 0) 70%
   );
   filter: blur(100px);
@@ -159,10 +160,10 @@ body {
 }
 
 .glass-panel:hover {
-  border-color: rgba(243, 18, 58, 0.3);
+  border-color: rgba(168, 85, 247, 0.35);
   box-shadow:
     var(--shadow-lg),
-    0 0 15px rgba(243, 18, 58, 0.05);
+    0 0 18px rgba(168, 85, 247, 0.1);
 }
 
 /* Layout Utilities */
@@ -226,7 +227,7 @@ body {
   color: #66b2ff;
 }
 .badge-license.pro {
-  background-color: rgba(243, 18, 58, 0.2);
+  background-color: rgba(168, 85, 247, 0.2);
   border-color: var(--primary);
   color: #ffffff;
   text-shadow: 0 0 5px var(--primary);
@@ -273,14 +274,14 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 10px rgba(243, 18, 58, 0.2);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow:
-    0 6px 15px rgba(243, 18, 58, 0.35),
+    0 6px 18px rgba(168, 85, 247, 0.45),
     var(--shadow-glow);
 }
 

@@ -186,6 +186,16 @@
         {:else}
           <span class="badge badge-setup open">Open</span>
         {/if}
+        <span class="badge badge-duration" title="Session Duration">
+          <Award size={11} />
+          <span>
+            {#if session.duration_laps}
+              {session.duration_laps} Laps
+            {:else}
+              {session.duration_minutes} Mins
+            {/if}
+          </span>
+        </span>
         {#if session.team_racing}
           <span
             class="badge badge-team"
@@ -197,12 +207,37 @@
           </span>
         {/if}
       </div>
+
       <h3 class="series-name">{session.series_name}</h3>
-      <div class="track-info">
-        <MapPin size={14} class="text-muted" />
-        <span class="track-name">{session.track.track_name}</span>
-        <span class="track-config">• {session.track.config_name}</span>
+
+      <div class="header-info-group">
+        <div class="track-info">
+          <MapPin size={14} class="text-muted" />
+          <span class="track-name">{session.track.track_name}</span>
+          <span class="track-config">• {session.track.config_name}</span>
+        </div>
+
+        {#if session.schedule_line}
+          <div class="schedule-info">
+            <Calendar size={14} class="text-muted" />
+            <span class="schedule-text">{session.schedule_line}</span>
+          </div>
+        {/if}
       </div>
+
+      {#if formattedLocalSlots && formattedLocalSlots.length > 0}
+        <div class="header-local-slots">
+          <span class="slots-label">Local Times:</span>
+          <div class="slots-chips">
+            {#each formattedLocalSlots as group}
+              <span class="slot-badge">
+                <span class="slot-day">{group.day}:</span>
+                <span class="slot-times">{group.times.join(', ')}</span>
+              </span>
+            {/each}
+          </div>
+        </div>
+      {/if}
     </div>
 
     <div class="status-block">
@@ -232,69 +267,11 @@
             <Car size={15} />
             <span>Eligible Vehicles ({session.cars.length})</span>
           </h4>
-          <ul class="car-list">
+          <ul class="car-list car-grid">
             {#each session.cars as car}
               <li>{car}</li>
             {/each}
           </ul>
-        </div>
-
-        <div class="detail-section">
-          <h4 class="section-title">
-            <Award size={15} />
-            <span>Session Stats</span>
-          </h4>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-label">Duration</span>
-              <span class="stat-value">
-                {#if session.duration_laps}
-                  {session.duration_laps} Laps
-                {:else}
-                  {session.duration_minutes} Mins
-                {/if}
-              </span>
-            </div>
-            {#if session.team_racing}
-              <div class="stat-item">
-                <span class="stat-label">Team Event</span>
-                <span class="stat-value">
-                  Yes ({session.min_drivers || 1}
-                  {session.min_drivers === 1 ? 'Driver' : 'Drivers'} Min)
-                </span>
-              </div>
-            {/if}
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4 class="section-title">
-            <Calendar size={15} />
-            <span>Series Schedule</span>
-          </h4>
-          <div class="schedule-card">
-            {#if session.schedule_line}
-              <div class="schedule-line">{session.schedule_line}</div>
-            {:else}
-              <div class="schedule-line text-muted">
-                No schedule line available
-              </div>
-            {/if}
-
-            {#if formattedLocalSlots && formattedLocalSlots.length > 0}
-              <div class="local-slots-wrapper">
-                <span class="local-slots-title">Your Local Timeslots</span>
-                <div class="local-slots-grid">
-                  {#each formattedLocalSlots as group}
-                    <div class="local-slot-item">
-                      <span class="slot-day">{group.day}</span>
-                      <span class="slot-times">{group.times.join(', ')}</span>
-                    </div>
-                  {/each}
-                </div>
-              </div>
-            {/if}
-          </div>
         </div>
       </div>
     </div>
@@ -315,7 +292,7 @@
 
   .session-card.near-start {
     border-left: 3px solid var(--primary);
-    box-shadow: 0 0 15px rgba(243, 18, 58, 0.15);
+    box-shadow: 0 0 18px rgba(168, 85, 247, 0.25);
   }
 
   .card-header {
@@ -409,6 +386,20 @@
     border: 1px solid var(--border-color);
   }
 
+  .badge-duration {
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    background-color: rgba(168, 85, 247, 0.12);
+    color: var(--primary);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
   .badge-team {
     font-size: 0.65rem;
     font-weight: 700;
@@ -435,6 +426,15 @@
     letter-spacing: -0.01em;
   }
 
+  .header-info-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.85rem;
+    margin-top: 2px;
+  }
+
   .track-info {
     display: flex;
     align-items: center;
@@ -450,6 +450,65 @@
 
   .track-config {
     color: var(--text-muted);
+  }
+
+  .schedule-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .schedule-text {
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .header-local-slots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  }
+
+  .slots-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .slots-chips {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .slot-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .slot-day {
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .slot-times {
+    font-weight: 700;
+    color: var(--primary);
   }
 
   .status-block {
@@ -488,9 +547,9 @@
 
   .text-primary-color {
     color: var(--primary);
-    border-color: rgba(243, 18, 58, 0.2);
-    background-color: rgba(243, 18, 58, 0.05);
-    text-shadow: 0 0 10px rgba(243, 18, 58, 0.2);
+    border-color: rgba(168, 85, 247, 0.3);
+    background-color: rgba(168, 85, 247, 0.1);
+    text-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
   }
 
   .text-secondary {
@@ -542,21 +601,8 @@
 
   .details-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr 1.2fr;
-    gap: 24px;
-  }
-
-  @media (max-width: 1024px) {
-    .details-grid {
-      grid-template-columns: 1.2fr 1fr;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .details-grid {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .detail-section {
@@ -585,6 +631,12 @@
     gap: 6px;
   }
 
+  .car-list.car-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+
   .car-list li {
     font-size: 0.85rem;
     color: var(--text-secondary);
@@ -596,118 +648,7 @@
   }
 
   .car-list li:hover {
-    border-color: rgba(243, 18, 58, 0.2);
+    border-color: rgba(168, 85, 247, 0.3);
     color: var(--text-primary);
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
-  }
-
-  .stat-item {
-    background-color: var(--bg-surface-elevated);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 8px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .stat-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-
-  .stat-value {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  /* Schedule Styles */
-  .schedule-card {
-    background-color: var(--bg-surface-elevated);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .schedule-line {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.4;
-  }
-
-  .local-slots-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 10px;
-  }
-
-  .local-slots-title {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-  }
-
-  .local-slots-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 150px;
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-
-  /* Customize scrollbar for premium feel */
-  .local-slots-grid::-webkit-scrollbar {
-    width: 4px;
-  }
-  .local-slots-grid::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .local-slots-grid::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 2px;
-  }
-
-  .local-slot-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    background-color: rgba(255, 255, 255, 0.02);
-    padding: 6px 10px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    transition: border-color var(--transition-fast);
-  }
-
-  .local-slot-item:hover {
-    border-color: rgba(243, 18, 58, 0.15);
-  }
-
-  .slot-day {
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
-
-  .slot-times {
-    color: var(--primary);
-    font-weight: 700;
-    text-shadow: 0 0 8px rgba(243, 18, 58, 0.15);
   }
 </style>

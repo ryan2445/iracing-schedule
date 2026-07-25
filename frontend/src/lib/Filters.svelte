@@ -211,8 +211,8 @@
 
   .search-input-wrapper input:focus {
     outline: none;
-    border-color: rgba(243, 18, 58, 0.4);
-    box-shadow: 0 0 10px rgba(243, 18, 58, 0.08);
+    border-color: rgba(168, 85, 247, 0.5);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
   }
 
   .clear-search-btn {
