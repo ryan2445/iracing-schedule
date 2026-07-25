@@ -58,4 +58,5 @@ To compile the Svelte application into highly optimized, minified static files:
 ```bash
 cd frontend
 npm run build
+aws s3 sync dist/ s3://<bucket>/tracker --delete
 ```
