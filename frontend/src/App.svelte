@@ -1,26 +1,19 @@
 <script lang="ts">
-  import { onMount, untrack } from 'svelte'
   import {
     Activity,
     Info,
-    AlertTriangle,
     RefreshCw,
     Gauge,
     Clock,
-    ArrowUp,
-    ArrowDown,
     SlidersHorizontal
   } from 'lucide-svelte'
   import Filters from './lib/Filters.svelte'
   import SessionCard from './lib/SessionCard.svelte'
   import { generateSessionsForRange, getCategories } from './lib/scheduleEngine'
-  import type { Session, Track } from './lib/scheduleEngine'
+  import type { Session } from './lib/scheduleEngine'
 
-  // Svelte 5 State Runes
-  let currentView = $state<'list' | 'calendar'>('list')
-
-  // Available filter options fetched on mount
-  let categories = $state<string[]>([])
+  // Fetch categories directly (synchronous and static)
+  const categories = getCategories()
 
   // Filter bindings
   let searchQuery = $state('')
@@ -38,13 +31,46 @@
   let sortBy = $state<SortField>('start_time')
   let sortOrder = $state<'asc' | 'desc'>('asc')
 
-  // Loaded sessions list
-  let sessions = $state<Session[]>([])
-  let isLoadingSessions = $state(false)
-  let sessionFetchError = $state('')
-
   // Pagination / Limiting for ultra-fast rendering performance
   let limitCount = $state(100)
+
+  // Reset limitCount whenever filters change to keep things responsive
+  $effect(() => {
+    searchQuery
+    selectedCategories
+    limitCount = 100
+  })
+
+  // Synchronous, reactive derived session generation (7-day window)
+  const sessions = $derived.by(() => {
+    const now = new Date()
+    const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+    let allSessions = generateSessionsForRange(now, end)
+
+    // Apply category filter
+    if (selectedCategories.length > 0) {
+      allSessions = allSessions.filter((s) =>
+        selectedCategories.includes(s.category)
+      )
+    }
+
+    // Apply search query filter (series, track or cars)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      allSessions = allSessions.filter((s) => {
+        const seriesMatch = s.series_name.toLowerCase().includes(query)
+        const trackMatch =
+          s.track.track_name.toLowerCase().includes(query) ||
+          s.track.config_name.toLowerCase().includes(query)
+        const carMatch = s.cars.some((car) =>
+          car.toLowerCase().includes(query)
+        )
+        return seriesMatch || trackMatch || carMatch
+      })
+    }
+
+    return allSessions
+  })
 
   // Filter sessions to only keep the next upcoming timeslot for each series
   const nextUpcomingSessions = $derived.by(() => {
@@ -61,7 +87,7 @@
     return Array.from(minSessionsMap.values())
   })
 
-  // Sorting logic using Svelte 5 fine-grained derived rune
+  // Sorting logic using Svelte 5 derived rune
   const sortedSessions = $derived.by(() => {
     const list = [...nextUpcomingSessions]
     list.sort((a, b) => {
@@ -90,12 +116,6 @@
 
   const displayedSessions = $derived(sortedSessions.slice(0, limitCount))
 
-  $effect(() => {
-    // Reset limitCount whenever sessions array changes (e.g. filters applied)
-    sessions
-    limitCount = 100
-  })
-
   // Dashboard Stats
   const activeSeriesCount = $derived(
     new Set(sessions.map((s) => s.series_id)).size
@@ -108,87 +128,14 @@
     }).length
   )
 
-  // Fetch meta-information from the client-side schedule engine
-  async function fetchMetadata() {
-    try {
-      categories = getCategories()
-    } catch (e) {
-      console.error('Failed to load initial metadata', e)
-    }
-  }
-
-  // Fetch filtered sessions from the client-side schedule engine
-  async function fetchSessions() {
-    isLoadingSessions = true
-    sessionFetchError = ''
-
-    try {
-      const now = new Date()
-      // Generate sessions for the next 7 days
-      const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-      let allSessions = generateSessionsForRange(now, end)
-
-      // Apply category filter
-      if (selectedCategories.length > 0) {
-        allSessions = allSessions.filter((s) =>
-          selectedCategories.includes(s.category)
-        )
-      }
-
-      // Apply search query filter (series, track or cars)
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase()
-        allSessions = allSessions.filter((s) => {
-          const seriesMatch = s.series_name.toLowerCase().includes(query)
-          const trackMatch =
-            s.track.track_name.toLowerCase().includes(query) ||
-            s.track.config_name.toLowerCase().includes(query)
-          const carMatch = s.cars.some((car) =>
-            car.toLowerCase().includes(query)
-          )
-          return seriesMatch || trackMatch || carMatch
-        })
-      }
-
-      sessions = allSessions
-    } catch (err: any) {
-      sessionFetchError = err.message || 'Error generating sessions.'
-    } finally {
-      isLoadingSessions = false
-    }
-  }
-
-  // Svelte 5 fine-grained reactive effect to reload sessions when filters change
-  $effect(() => {
-    // This will trigger automatically when any of these state variables change
-    searchQuery
-    selectedCategories
-
-    untrack(() => {
-      fetchSessions()
-    })
-  })
-
   function handleSortChange(fieldId: SortField) {
     if (sortBy === fieldId) {
       sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
     } else {
       sortBy = fieldId
-      if (fieldId === 'start_time') {
-        sortOrder = 'desc'
-      } else {
-        sortOrder = 'asc'
-      }
+      sortOrder = fieldId === 'start_time' ? 'desc' : 'asc'
     }
   }
-
-  function toggleSortOrder() {
-    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
-  }
-
-  onMount(() => {
-    fetchMetadata()
-  })
 </script>
 
 <div class="bg-glow-effect"></div>
@@ -234,84 +181,66 @@
     availableCategories={categories}
   />
 
-  <!-- Main View Render Block -->
-  {#if isLoadingSessions}
-    <div class="loading-state">
-      <RefreshCw size={32} class="spinner text-primary-color" />
-      <p class="text-secondary">Retrieving latest session schedules...</p>
+  <!-- Timeline Linear View -->
+  <div class="linear-schedule-container">
+    <div class="view-header">
+      <h2>Live Race Grid</h2>
+      <span class="badge badge-sessions-count"
+        >{nextUpcomingSessions.length} upcoming sessions found</span
+      >
     </div>
-  {:else if sessionFetchError}
-    <div class="error-state glass-panel">
-      <AlertTriangle size={32} class="text-primary-color" />
-      <h3>API Connection Failed</h3>
-      <p>{sessionFetchError}</p>
-      <button class="btn-primary" onclick={fetchSessions}>
-        <RefreshCw size={16} />
-        <span>Try Reconnecting</span>
-      </button>
+
+    <!-- Premium Sort Toolbar -->
+    <div class="sort-toolbar-panel glass-panel">
+      <div class="sort-label-group">
+        <SlidersHorizontal size={14} class="text-primary-color" />
+        <span class="sort-title">Sort Grid:</span>
+      </div>
+      <div class="sort-pills-container">
+        {#each [{ id: 'start_time', label: 'Start Time' }, { id: 'series_name', label: 'Series Name' }, { id: 'category', label: 'Category' }, { id: 'license_group_id', label: 'License' }, { id: 'duration_minutes', label: 'Duration' }, { id: 'track_name', label: 'Track' }, { id: 'fixed_setup', label: 'Setup' }] as field}
+          <button
+            class="sort-pill-btn {sortBy === field.id ? 'active' : ''}"
+            onclick={() => handleSortChange(field.id as SortField)}
+          >
+            <span>{field.label}</span>
+            {#if sortBy === field.id}
+              <span class="sort-dir-arrow">
+                {sortOrder === 'asc' ? '↑' : '↓'}
+              </span>
+            {/if}
+          </button>
+        {/each}
+      </div>
     </div>
-  {:else if currentView === 'list'}
-    <!-- Timeline Linear View -->
-    <div class="linear-schedule-container">
-      <div class="view-header">
-        <h2>Live Race Grid</h2>
-        <span class="badge badge-sessions-count"
-          >{nextUpcomingSessions.length} upcoming sessions found</span
-        >
+
+    {#if nextUpcomingSessions.length === 0}
+      <div class="empty-state glass-panel">
+        <Info size={32} class="text-secondary" />
+        <h3>No Match Found</h3>
+        <p>
+          No active series match your search query or selected criteria. Try
+          resetting filters.
+        </p>
+      </div>
+    {:else}
+      <div class="sessions-vertical-stack">
+        {#each displayedSessions as session (session.session_id)}
+          <SessionCard {session} />
+        {/each}
       </div>
 
-      <!-- Premium Sort Toolbar -->
-      <div class="sort-toolbar-panel glass-panel">
-        <div class="sort-label-group">
-          <SlidersHorizontal size={14} class="text-primary-color" />
-          <span class="sort-title">Sort Grid:</span>
-        </div>
-        <div class="sort-pills-container">
-          {#each [{ id: 'start_time', label: 'Start Time' }, { id: 'series_name', label: 'Series Name' }, { id: 'category', label: 'Category' }, { id: 'license_group_id', label: 'License' }, { id: 'duration_minutes', label: 'Duration' }, { id: 'track_name', label: 'Track' }, { id: 'fixed_setup', label: 'Setup' }] as field}
-            <button
-              class="sort-pill-btn {sortBy === field.id ? 'active' : ''}"
-              onclick={() => handleSortChange(field.id as SortField)}
+      {#if nextUpcomingSessions.length > limitCount}
+        <div class="load-more-container">
+          <button class="btn-load-more" onclick={() => (limitCount += 100)}>
+            <RefreshCw size={14} />
+            <span
+              >Show More ({nextUpcomingSessions.length - limitCount} remaining)</span
             >
-              <span>{field.label}</span>
-              {#if sortBy === field.id}
-                <span class="sort-dir-arrow">
-                  {sortOrder === 'asc' ? '↑' : '↓'}
-                </span>
-              {/if}
-            </button>
-          {/each}
+          </button>
         </div>
-      </div>
-
-      {#if nextUpcomingSessions.length === 0}
-        <div class="empty-state glass-panel">
-          <Info size={32} class="text-secondary" />
-          <h3>No Match Found</h3>
-          <p>
-            No active series match your search query or selected criteria. Try
-            resetting filters.
-          </p>
-        </div>
-      {:else}
-        <div class="sessions-vertical-stack">
-          {#each displayedSessions as session (session.session_id)}
-            <SessionCard {session} />
-          {/each}
-        </div>
-
-        {#if nextUpcomingSessions.length > limitCount}
-          <div class="load-more-container">
-            <button class="btn-load-more" onclick={() => (limitCount += 100)}>
-              <RefreshCw size={14} />
-              <span
-                >Show More ({nextUpcomingSessions.length - limitCount} remaining)</span
-              >
-            </button>
-          </div>
-        {/if}
       {/if}
-    </div>
-  {/if}
+    {/if}
+  </div>
 </main>
 
 <style>
@@ -539,17 +468,6 @@
   }
 
   /* Loading and Error states */
-  .loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 80px 20px;
-    text-align: center;
-  }
-
-  .error-state,
   .empty-state {
     display: flex;
     flex-direction: column;
@@ -561,14 +479,12 @@
     border-radius: 12px;
   }
 
-  .error-state h3,
   .empty-state h3 {
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-primary);
   }
 
-  .error-state p,
   .empty-state p {
     font-size: 0.9rem;
     color: var(--text-secondary);
