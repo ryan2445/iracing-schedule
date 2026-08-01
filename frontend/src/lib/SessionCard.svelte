@@ -100,6 +100,30 @@
     })
   }
 
+  function formatWeekDate(dateStr: string) {
+    if (!dateStr) return ''
+    const parts = dateStr.split('-').map(Number)
+    if (parts.length !== 3) return dateStr
+    const [year, month, day] = parts
+    const d = new Date(Date.UTC(year, month - 1, day))
+    return d.toLocaleDateString([], {
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC'
+    })
+  }
+
+  function isCurrentWeek(weeks: any[], index: number, sessionStartTime: string): boolean {
+    if (!sessionStartTime || !weeks || !weeks[index]) return false
+    const weekStart = new Date(weeks[index].date + 'T00:00:00Z').getTime()
+    const nextWeekStart =
+      index < weeks.length - 1
+        ? new Date(weeks[index + 1].date + 'T00:00:00Z').getTime()
+        : Infinity
+    const sessionTime = new Date(sessionStartTime).getTime()
+    return sessionTime >= weekStart && sessionTime < nextWeekStart
+  }
+
   // Live countdown effect
   function updateCountdown() {
     const start = new Date(session.start_time).getTime()
@@ -273,6 +297,52 @@
             {/each}
           </ul>
         </div>
+
+        {#if session.weeks && session.weeks.length > 0}
+          <div class="detail-section">
+            <h4 class="section-title">
+              <Calendar size={15} />
+              <span>Season Schedule ({session.weeks.length} Weeks)</span>
+            </h4>
+            <div class="weeks-table-container">
+              <table class="weeks-table">
+                <thead>
+                  <tr>
+                    <th>Week</th>
+                    <th>Start Date</th>
+                    <th>Track</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#each session.weeks as week, index}
+                    {@const isCurrent = isCurrentWeek(session.weeks, index, session.start_time)}
+                    <tr class={isCurrent ? 'current-week-row' : ''}>
+                      <td class="week-num-cell">
+                        <span class="week-num">Week {week.week}</span>
+                        {#if isCurrent}
+                          <span class="badge badge-current-week">Active</span>
+                        {/if}
+                      </td>
+                      <td class="week-dates-cell">{formatWeekDate(week.date)}</td>
+                      <td class="week-track-cell">
+                        {#if week.track_obj}
+                          <span class="schedule-track-name">{week.track_obj.track_name}</span>
+                          {#if week.track_obj.config_name && week.track_obj.config_name !== 'Full Course'}
+                            <span class="schedule-track-config"> • {week.track_obj.config_name}</span>
+                          {/if}
+                        {:else if week.track}
+                          <span class="schedule-track-name">{week.track}</span>
+                        {:else}
+                          <span class="schedule-track-name text-muted">TBD</span>
+                        {/if}
+                      </td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {/if}
       </div>
     </div>
   {/if}
@@ -650,5 +720,103 @@
   .car-list li:hover {
     border-color: rgba(168, 85, 247, 0.3);
     color: var(--text-primary);
+  }
+
+  /* Season Schedule Table Styles */
+  .weeks-table-container {
+    overflow-x: auto;
+    max-height: 320px;
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
+  }
+
+  .weeks-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+  }
+
+  .weeks-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bg-surface-elevated);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .weeks-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+  }
+
+  .weeks-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .weeks-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .current-week-row {
+    background-color: rgba(168, 85, 247, 0.12) !important;
+  }
+
+  .current-week-row td {
+    color: var(--text-primary);
+  }
+
+  .week-num-cell {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .week-num {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+  }
+
+  .badge-current-week {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: rgba(168, 85, 247, 0.25);
+    color: var(--primary);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.2);
+  }
+
+  .week-dates-cell {
+    white-space: nowrap;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+  }
+
+  .week-track-cell {
+    font-weight: 500;
+  }
+
+  .schedule-track-name {
+    color: var(--text-primary);
+  }
+
+  .schedule-track-config {
+    color: var(--text-muted);
+    font-size: 0.8rem;
   }
 </style>

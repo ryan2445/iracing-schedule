@@ -9,7 +9,7 @@
   } from 'lucide-svelte'
   import Filters from './lib/Filters.svelte'
   import SessionCard from './lib/SessionCard.svelte'
-  import { generateSessionsForRange, getCategories } from './lib/scheduleEngine'
+  import { generateNextSessionForEverySeries, getCategories } from './lib/scheduleEngine'
   import type { Session } from './lib/scheduleEngine'
 
   // Fetch categories directly (synchronous and static)
@@ -41,11 +41,10 @@
     limitCount = 100
   })
 
-  // Synchronous, reactive derived session generation (7-day window)
+  // Synchronous, reactive derived session generation (next upcoming timeslot for every single upcoming series)
   const sessions = $derived.by(() => {
     const now = new Date()
-    const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-    let allSessions = generateSessionsForRange(now, end)
+    let allSessions = generateNextSessionForEverySeries(now)
 
     // Apply category filter
     if (selectedCategories.length > 0) {
@@ -72,20 +71,8 @@
     return allSessions
   })
 
-  // Filter sessions to only keep the next upcoming timeslot for each series
-  const nextUpcomingSessions = $derived.by(() => {
-    const minSessionsMap = new Map<number, Session>()
-    for (const session of sessions) {
-      const existing = minSessionsMap.get(session.series_id)
-      if (
-        !existing ||
-        new Date(session.start_time) < new Date(existing.start_time)
-      ) {
-        minSessionsMap.set(session.series_id, session)
-      }
-    }
-    return Array.from(minSessionsMap.values())
-  })
+  // Each series already has its single next upcoming session
+  const nextUpcomingSessions = $derived(sessions)
 
   // Sorting logic using Svelte 5 derived rune
   const sortedSessions = $derived.by(() => {

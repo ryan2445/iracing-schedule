@@ -10,6 +10,7 @@ export interface Track {
 export interface Week {
   week: number
   date: string
+  track?: string
   track_obj?: Track
   duration_minutes?: number
   duration_laps?: number
@@ -56,6 +57,7 @@ export interface Session {
   min_drivers?: number | null
   schedule_line?: string
   rule?: Rule
+  weeks?: Week[]
 }
 
 // Convert Date to Python weekday (0=Monday, ..., 6=Sunday)
@@ -80,6 +82,114 @@ export function generateSessionsForRange(
   // Sort sessions chronologically by start_time
   sessions.sort((a, b) => a.start_time.localeCompare(b.start_time))
   return sessions
+}
+
+export function generateNextSessionForEverySeries(
+  now: Date = new Date()
+): Session[] {
+  const sessions: Session[] = []
+  const seriesList = scheduleData.series as unknown as Series[]
+
+  for (const s of seriesList) {
+    const nextSession = getNextUpcomingSessionForSeries(s, now)
+    if (nextSession) {
+      sessions.push(nextSession)
+    }
+  }
+
+  // Sort sessions chronologically by start_time
+  sessions.sort((a, b) => a.start_time.localeCompare(b.start_time))
+  return sessions
+}
+
+function getNextUpcomingSessionForSeries(s: Series, now: Date): Session | null {
+  const rule = s.rule
+
+  // Type 1: Timeslot series
+  if (rule.is_timeslot) {
+    let earliestSession: Session | null = null
+    let earliestTime = Infinity
+
+    for (const w of s.weeks || []) {
+      if (!w.timeslot_time) continue
+      const sessionTime = new Date(w.timeslot_time.replace(' ', 'T') + 'Z')
+      if (isNaN(sessionTime.getTime())) continue
+
+      if (
+        sessionTime.getTime() >= now.getTime() &&
+        sessionTime.getTime() < earliestTime
+      ) {
+        earliestTime = sessionTime.getTime()
+        const trackObj = w.track_obj || {
+          track_id: 0,
+          track_name: 'TBD',
+          config_name: 'Full Course',
+          category: s.category
+        }
+        earliestSession = createSessionObject(s, w, sessionTime, trackObj)
+      }
+    }
+    return earliestSession
+  }
+
+  // Type 2: Regular recurring series
+  const weeks = s.weeks || []
+  if (weeks.length === 0) return null
+
+  for (const w of weeks) {
+    const weekStartDt = new Date(w.date + 'T00:00:00Z')
+    const weekEndDt = new Date(weekStartDt.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+    // If this week is completely in the past relative to now, skip it
+    if (weekEndDt.getTime() <= now.getTime()) continue
+
+    // Start searching from either now or weekStartDt, whichever is later
+    const searchStart = now.getTime() > weekStartDt.getTime() ? now : weekStartDt
+
+    // Round searchStart down to the hour
+    let currentHour = new Date(
+      Date.UTC(
+        searchStart.getUTCFullYear(),
+        searchStart.getUTCMonth(),
+        searchStart.getUTCDate(),
+        searchStart.getUTCHours(),
+        0,
+        0,
+        0
+      )
+    )
+
+    while (currentHour.getTime() < weekEndDt.getTime()) {
+      const weekday = getPythonWeekday(currentHour)
+      const hour = currentHour.getUTCHours()
+      const isEven = hour % 2 === 0
+
+      const matchingMinutes = getMatchingMinutes(rule, weekday, hour, isEven)
+
+      for (const minVal of matchingMinutes) {
+        const sessionTime = new Date(
+          currentHour.getTime() + minVal * 60 * 1000
+        )
+        if (
+          sessionTime.getTime() >= now.getTime() &&
+          sessionTime.getTime() >= weekStartDt.getTime() &&
+          sessionTime.getTime() < weekEndDt.getTime()
+        ) {
+          const trackObj = w.track_obj || {
+            track_id: 0,
+            track_name: 'TBD',
+            config_name: 'Full Course',
+            category: s.category
+          }
+          return createSessionObject(s, w, sessionTime, trackObj)
+        }
+      }
+
+      currentHour = new Date(currentHour.getTime() + 60 * 60 * 1000)
+    }
+  }
+
+  return null
 }
 
 function generateTimeslotSessions(
@@ -244,7 +354,8 @@ function addRegularSessionIfActive(
     team_racing: s.team_racing ?? false,
     min_drivers: s.min_drivers ?? null,
     schedule_line: s.schedule_line,
-    rule: s.rule
+    rule: s.rule,
+    weeks: s.weeks
   })
 }
 
@@ -270,7 +381,8 @@ function createSessionObject(
     team_racing: s.team_racing ?? false,
     min_drivers: s.min_drivers ?? null,
     schedule_line: s.schedule_line,
-    rule: s.rule
+    rule: s.rule,
+    weeks: s.weeks
   }
 }
 
