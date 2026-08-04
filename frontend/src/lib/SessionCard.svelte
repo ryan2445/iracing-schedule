@@ -318,10 +318,12 @@
                     {@const isCurrent = isCurrentWeek(session.weeks, index, session.start_time)}
                     <tr class={isCurrent ? 'current-week-row' : ''}>
                       <td class="week-num-cell">
-                        <span class="week-num">Week {week.week}</span>
-                        {#if isCurrent}
-                          <span class="badge badge-current-week">Active</span>
-                        {/if}
+                        <div class="week-num-wrapper">
+                          <span class="week-num">Week {week.week}</span>
+                          {#if isCurrent}
+                            <span class="badge badge-current-week">Active</span>
+                          {/if}
+                        </div>
                       </td>
                       <td class="week-dates-cell">{formatWeekDate(week.date)}</td>
                       <td class="week-track-cell">
@@ -757,6 +759,7 @@
     padding: 8px 12px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     color: var(--text-secondary);
+    vertical-align: middle;
   }
 
   .weeks-table tr:last-child td {
@@ -777,7 +780,10 @@
 
   .week-num-cell {
     white-space: nowrap;
-    display: flex;
+  }
+
+  .week-num-wrapper {
+    display: inline-flex;
     align-items: center;
     gap: 8px;
   }
