@@ -1,5 +1,6 @@
 import os
 import re
+import glob
 import logging
 import hashlib
 from datetime import datetime, timedelta
@@ -8,7 +9,23 @@ import pypdf
 
 logger = logging.getLogger(__name__)
 
-PDF_PATH = "/Users/ryan/Sites/iracing-race-tracker/iracing_season_3_schedule.pdf"
+
+def get_pdf_path() -> str:
+    """Finds the most recent iRacing schedule PDF available."""
+    env_path = os.environ.get("IRACING_SCHEDULE_PDF")
+    if env_path and os.path.exists(env_path):
+        return env_path
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+    candidates = glob.glob(os.path.join(base_dir, "iracing_season_*_schedule.pdf"))
+    if not candidates:
+        candidates = glob.glob("iracing_season_*_schedule.pdf") + glob.glob("../iracing_season_*_schedule.pdf")
+    if candidates:
+        candidates.sort(key=lambda p: [int(c) if c.isdigit() else c for c in re.split(r"(\d+)", p)], reverse=True)
+        return candidates[0]
+    return os.path.join(base_dir, "iracing_season_4_schedule.pdf")
+
+
+PDF_PATH = get_pdf_path()
 
 categories_map: dict[str, str] = {
     "OVAL": "Oval",
@@ -16,6 +33,7 @@ categories_map: dict[str, str] = {
     "FORMULA CAR": "Formula Car",
     "DIRT OVAL": "Dirt Oval",
     "DIRT ROAD": "Dirt Road",
+    "UNRANKED": "Unranked",
 }
 
 license_groups_map: dict[str, dict[str, Any]] = {
@@ -63,6 +81,9 @@ class ScheduleEngine:
             reader = pypdf.PdfReader(PDF_PATH)
             all_text_lines: list[str] = []
 
+            # Extract authoritative TOC series ordering & category
+            toc_series = self._parse_toc(reader)
+
             # Skip first 5 pages of Table of Contents
             for i in range(5, len(reader.pages)):
                 page_text = reader.pages[i].extract_text()
@@ -92,7 +113,10 @@ class ScheduleEngine:
                     if index_in_list + 1 < len(license_indices)
                     else len(all_text_lines)
                 )
-                category = line_to_category[idx]
+                if index_in_list < len(toc_series):
+                    category = toc_series[index_in_list][1]
+                else:
+                    category = line_to_category.get(idx, "Oval")
                 
                 weeks = self._parse_weeks(all_text_lines, idx, next_idx, category)
                 is_team_racing = "team racing" in lic_line.lower()
@@ -123,8 +147,32 @@ class ScheduleEngine:
         except Exception as e:
             logger.error(f"Error parsing PDF schedule: {e}", exc_info=True)
 
+    def _parse_toc(self, reader: pypdf.PdfReader) -> list[tuple[str, str]]:
+        """Extracts ordered list of (title, category) from Table of Contents."""
+        toc_lines: list[str] = []
+        for i in range(min(5, len(reader.pages))):
+            t = reader.pages[i].extract_text()
+            if t:
+                toc_lines.extend(t.split("\n"))
+
+        current_cat = "Oval"
+        series_info: list[tuple[str, str]] = []
+        for line in toc_lines:
+            s = line.strip()
+            if not s or ". ." not in s:
+                continue
+            first_part = s.split(". .")[0].strip()
+            u = first_part.upper()
+            if u in categories_map:
+                current_cat = categories_map[u]
+                continue
+            if re.match(r"^[RDCBA]\s+Class\s+Series", first_part, re.IGNORECASE):
+                continue
+            series_info.append((first_part, current_cat))
+        return series_info
+
     def _build_line_to_category_map(self, all_text_lines: list[str]) -> dict[int, str]:
-        """Maps line numbers to categories sequentially."""
+        """Maps line numbers to categories sequentially as a fallback."""
         line_to_category = {}
         current_cat = "Oval"
         for idx, line in enumerate(all_text_lines):
@@ -134,53 +182,37 @@ class ScheduleEngine:
             line_to_category[idx] = current_cat
         return line_to_category
 
+    def _is_boundary_line(self, line: str) -> bool:
+        """Checks if a line marks the boundary of series details / previous series."""
+        s = line.strip()
+        if not s or s.isdigit():
+            return True
+        u = s.upper()
+        if u in categories_map or re.match(r"^[RDCBA]\s+Class\s+Series", s, re.IGNORECASE) or "rule set" in s.lower():
+            return True
+        if any(
+            s.startswith(p)
+            for p in [
+                "Week ", "Races ", "Min entries ", "Penalty ", "No incident ", "DQ at ",
+                "(", "Rolling", "Standing", "Forecast", "Single-file", "- Permissive", "- Strict", "Maintain"
+            ]
+        ):
+            return True
+        if re.match(r"^[HCF]:\d+L", s) or re.match(r"^[A-Z0-9]{2,4}:\s*\d+\s*tire", s, re.IGNORECASE):
+            return True
+        if any(k in s.lower() for k in ["laps", "mins", "tire sets", "scrutiny", "cautions", "°f", "°c", "rain chance"]):
+            return True
+        return False
+
     def _extract_series_candidates(self, all_text_lines: list[str], idx: int) -> list[str]:
         """Extracts candidate lines for series title and vehicle description by walking backwards."""
         candidates: list[str] = []
-        for back_idx in range(idx - 1, max(0, idx - 15), -1):
+        for back_idx in range(idx - 1, max(0, idx - 20), -1):
             line = all_text_lines[back_idx].strip()
             if not line or line.isdigit():
+                continue
+            if self._is_boundary_line(line):
                 break
-
-            cleaned = line.upper()
-            if (
-                cleaned in categories_map
-                or "CLASS SERIES" in cleaned
-                or "CLASS D" in cleaned
-                or "CLASS C" in cleaned
-                or "CLASS B" in cleaned
-                or "CLASS A" in cleaned
-                or "ROOKIE" in cleaned
-            ):
-                break
-            if (
-                line.startswith("Week ")
-                or line.startswith("Races ")
-                or line.startswith("Min entries ")
-                or line.startswith("Penalty ")
-                or line.startswith("No incident ")
-                or line.startswith("DQ at ")
-            ):
-                break
-            if line.startswith("("):
-                break
-            if (
-                "laps" in line
-                or "mins" in line
-                or "tire sets" in line
-                or "scrutiny" in line
-                or "start" in line
-                or "cautions" in line
-            ):
-                break
-            if (
-                "°F" in line
-                or "°C" in line
-                or "Rain chance" in line
-                or "Cautions" in line
-            ):
-                break
-
             candidates.insert(0, line)
         return candidates
 
@@ -202,12 +234,20 @@ class ScheduleEngine:
                     joined = joined + " " + line
         return joined
 
-    def _clean_series_title(self, title: str) -> str:
+    def _clean_series_title(self, raw_title: str) -> str:
         """Cleans schedule patterns out of the raw series title."""
-        display_title = re.sub(r"\s*-\s*\d{4}\s+Season\s+\d+\s*(Fixed)?", "", title, flags=re.IGNORECASE)
-        display_title = re.sub(r"\s*-\s*\d{4}\s+Season\s*(Fixed)?", "", display_title, flags=re.IGNORECASE)
-        display_title = re.sub(r"\s*-\s+Season\s+\d+\s*(Fixed)?", "", display_title, flags=re.IGNORECASE)
-        return display_title.strip()
+        s = raw_title
+        s = re.sub(r"Season(?:\s+\d+)?\s+Fixed$", "Season - Fixed", s, flags=re.IGNORECASE)
+        s = re.sub(r"\s*-\s*20\d{2}\s*-\s*Season(?:\s+\d+)?\s*", " ", s, flags=re.IGNORECASE)
+        s = re.sub(r"\s*20\d{2}\s*-\s*Season(?:\s+\d+)?\s*", " ", s, flags=re.IGNORECASE)
+        s = re.sub(r"\s*-\s*20\d{2}\s+Season(?:\s+\d+)?\s*-?\s*", " - ", s, flags=re.IGNORECASE)
+        s = re.sub(r"\s*20\d{2}\s+Season(?:\s+\d+)?\s*", " ", s, flags=re.IGNORECASE)
+        s = re.sub(r"-\s*Fixed(?:\s*-\s*Fixed)+", "- Fixed", s, flags=re.IGNORECASE)
+        s = re.sub(r"\s*-\s*-\s*", " - ", s)
+        s = re.sub(r"\s*-\s*$", "", s)
+        s = re.sub(r"^\s*-\s*", "", s)
+        s = re.sub(r"\s+", " ", s).strip()
+        return s
 
     def _parse_license_group(self, lic_line: str) -> tuple[str, int]:
         """Determines license group name and ID from the license description line."""
@@ -228,13 +268,35 @@ class ScheduleEngine:
         """Parses the weekly schedule details for a series."""
         weeks = []
         week_re = re.compile(r"^Week\s+(\d+)\s+\(([^)]+)\)\s*(.*)$")
+        timeslot_re = re.compile(r"^\(20\d{2}-\d{2}-\d{2}")
+
+        skip_until = -1
         for j in range(idx, next_idx):
+            if j <= skip_until:
+                continue
             line = all_text_lines[j].strip()
             match = week_re.match(line)
             if match:
                 week_num = int(match.group(1))
                 week_date = match.group(2)
                 track_name = match.group(3).strip()
+
+                # Check if next line is a track continuation (wrapped track name or config)
+                consumed_next = False
+                if j + 1 < next_idx:
+                    next_l = all_text_lines[j + 1].strip()
+                    if (
+                        next_l
+                        and not timeslot_re.match(next_l)
+                        and not next_l.startswith("Week ")
+                        and "-->" not in next_l
+                        and not next_l.startswith("Dirt Outlaw Micro Sprint Car")
+                        and not any(k in next_l.lower() for k in ["°f", "°c", "rain chance", "cautions", "laps", "mins", "rolling", "standing", "qual scrutiny"])
+                    ):
+                        if track_name.endswith("-") or (not next_l.isdigit() and any(track_name.endswith(" " + term) for term in ["Open Wheel", "without", "without first", "GT", "Grand", "Infield Road", "Historical", "24 Heures du", "Big", "Legends Road", "Kurzanbindung", "National", "West", "Dirt Road", "Rallycross"])):
+                            track_name = (track_name + " " + next_l).replace("  ", " ").strip()
+                            skip_until = j + 1
+                            consumed_next = True
 
                 # Split track name & config
                 if " - " in track_name:
@@ -256,7 +318,8 @@ class ScheduleEngine:
 
                 # Scan forward to collect detail lines for this week
                 detail_lines = []
-                for k in range(j + 1, next_idx):
+                start_k = (j + 2) if consumed_next else (j + 1)
+                for k in range(start_k, next_idx):
                     nl = all_text_lines[k].strip()
                     if week_re.match(nl) or "-->" in nl:
                         break
@@ -365,7 +428,7 @@ class ScheduleEngine:
 
         s = schedule_str.lower()
 
-        if "gmt" in s:
+        if "gmt" in s or "et" in s or "est" in s or "edt" in s:
             specific_slots = self._parse_gmt_specific_slots(s)
 
         if not specific_slots:
@@ -382,33 +445,76 @@ class ScheduleEngine:
         }
 
     def _parse_gmt_specific_slots(self, s: str) -> list[tuple[int, int, int]]:
-        """Parses GMT specific timeslots from schedule string."""
-        specific_slots = []
+        """Parses GMT or ET specific timeslots from schedule string."""
         days_map = {
             "mon": 0, "monday": 0,
-            "tues": 1,
-            "wed": 2, "wednesday": 2,
+            "tues": 1, "tue": 1, "tuesday": 1,
+            "weds": 2, "wed": 2, "wednesday": 2,
             "thur": 3, "thurs": 3, "thursday": 3,
             "fri": 4, "friday": 4,
             "sat": 5, "saturday": 5, "saturdays": 5,
             "sun": 6, "sunday": 6, "sundays": 6,
         }
-        parts = re.split(r"[,&]|\band\b", s)
-        current_day = None
-        for part in parts:
-            part = part.strip()
-            for d_name, d_idx in days_map.items():
-                if d_name in part:
-                    current_day = d_idx
-                    break
-            time_matches = re.findall(r"\b(\d{1,2})(?::(\d{2}))?\b", part)
-            if current_day is not None and time_matches:
-                for h_str, m_str in time_matches:
+
+        # Check for ET pattern: e.g. "Races on Monday at 8pm ET"
+        et_match = re.search(r"\b(mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?)\b.*?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:et|est|edt)", s)
+        if et_match:
+            day_str = et_match.group(1)
+            day_idx = days_map.get(day_str, 0)
+            hour = int(et_match.group(2))
+            minute = int(et_match.group(3)) if et_match.group(3) else 0
+            ampm = et_match.group(4)
+            if ampm == "pm" and hour < 12:
+                hour += 12
+            elif ampm == "am" and hour == 12:
+                hour = 0
+            utc_hour = (hour + 4) % 24
+            utc_day = (day_idx + ((hour + 4) // 24)) % 7
+            return [(utc_day, utc_hour, minute)]
+
+        if "gmt" not in s:
+            return []
+
+        slots: list[tuple[int, int, int]] = []
+        cleaned = re.sub(r"every other\s+", "", s)
+        chunks = cleaned.split("gmt")
+        last_days: list[int] = []
+
+        for chunk in chunks:
+            chunk = chunk.strip(" ,;&")
+            if not chunk:
+                continue
+
+            day_matches: list[tuple[int, int]] = []
+            for d_name, d_idx in sorted(days_map.items(), key=lambda x: -len(x[0])):
+                for m in re.finditer(rf"\b{d_name}\b", chunk):
+                    day_matches.append((m.start(), d_idx))
+
+            day_matches.sort(key=lambda x: x[0])
+            days: list[int] = []
+            for _, d_idx in day_matches:
+                if d_idx not in days:
+                    days.append(d_idx)
+
+            if not days and last_days:
+                days = list(last_days)
+            elif days:
+                last_days = list(days)
+
+            time_part = chunk
+            if day_matches:
+                last_day_pos = day_matches[-1][0]
+                time_part = chunk[last_day_pos:]
+
+            times = re.findall(r"\b(\d{1,2})(?::(\d{2}))?\b", time_part)
+            for d in days:
+                for h_str, m_str in times:
                     h = int(h_str)
                     m = int(m_str) if m_str else 0
                     if h < 24 and m < 60:
-                        specific_slots.append((current_day, h, m))
-        return specific_slots
+                        slots.append((d, h, m))
+
+        return sorted(list(set(slots)))
 
     def _parse_regular_intervals(self, s: str) -> tuple[int, bool | None, list[int]]:
         """Parses regular interval patterns from schedule string."""

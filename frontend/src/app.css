@@ -28,6 +28,7 @@
   --color-oval: #f59e0b;
   --color-dirt-oval: #a16207;
   --color-dirt-road: #34d399;
+  --color-unranked: #94a3b8;
 
   /* License Group Colors */
   --license-rookie: #f43f5e;
@@ -257,6 +258,9 @@ body {
 }
 .tag-category.dirt-road {
   border-left-color: var(--color-dirt-road);
+}
+.tag-category.unranked {
+  border-left-color: var(--color-unranked);
 }
 
 /* Micro-animations and Hover Effects */

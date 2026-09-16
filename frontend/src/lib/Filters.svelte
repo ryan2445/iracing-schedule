@@ -291,4 +291,10 @@
     color: #000;
     box-shadow: 0 0 10px rgba(0, 255, 102, 0.25);
   }
+  .filter-tag.unranked.selected {
+    background-color: var(--color-unranked, #94a3b8);
+    border-color: var(--color-unranked, #94a3b8);
+    color: #000;
+    box-shadow: 0 0 10px rgba(148, 163, 184, 0.25);
+  }
 </style>

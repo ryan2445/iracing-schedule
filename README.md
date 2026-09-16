@@ -24,7 +24,7 @@ This project is built as a **100% serverless static website** that can be hosted
 
 ### 1. (Optional) Parse and Export the PDF Schedule
 
-Whenever the source `iracing_season_3_schedule.pdf` changes, or you want to update the parsed database, compile the schedule using the Python parser:
+Whenever the source `iracing_season_4_schedule.pdf` changes, or you want to update the parsed database, compile the schedule using the Python parser:
 
 ```bash
 cd backend
