@@ -5,22 +5,18 @@
   --bg-main: #0a0614;
   --bg-surface: #130d24;
   --bg-surface-elevated: #1c1436;
-  --bg-surface-glass: rgba(19, 13, 36, 0.75);
+  --bg-surface-glass: #130d24;
 
   --border-color: #2e214d;
-  --border-color-glow: rgba(168, 85, 247, 0.25);
+  --border-hover: #4c3575;
 
   /* Brand colors - Purple Theme */
   --primary: #a855f7;
   --primary-hover: #c084fc;
-  --primary-glow: rgba(168, 85, 247, 0.45);
 
   --accent-purple-light: #e9d5ff;
   --accent-cyan: #38bdf8;
-  --accent-cyan-glow: rgba(56, 189, 248, 0.3);
-
   --accent-green: #34d399;
-  --accent-green-glow: rgba(52, 211, 153, 0.3);
 
   /* Category colors */
   --color-sports-car: #c084fc;
@@ -47,11 +43,11 @@
   --sans: 'Outfit', system-ui, -apple-system, sans-serif;
   --mono: ui-monospace, monospace;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(10, 6, 20, 0.5);
-  --shadow-lg: 0 12px 24px rgba(10, 6, 20, 0.7);
-  --shadow-glow: 0 0 20px rgba(168, 85, 247, 0.3);
+  /* Shadows - Flat Style */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-glow: none;
 
   /* Animations */
   --transition-fast: 0.15s ease;
@@ -94,77 +90,16 @@ body {
   background: var(--primary);
 }
 
-/* Background Gradients */
-.bg-glow-effect {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.bg-glow-effect::before {
-  content: '';
-  position: absolute;
-  top: -10%;
-  left: -10%;
-  width: 50%;
-  height: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(168, 85, 247, 0.18) 0%,
-    rgba(0, 0, 0, 0) 70%
-  );
-  filter: blur(80px);
-  animation: floatGlow 12s ease-in-out infinite alternate;
-}
-
-.bg-glow-effect::after {
-  content: '';
-  position: absolute;
-  bottom: -10%;
-  right: -10%;
-  width: 60%;
-  height: 60%;
-  background: radial-gradient(
-    circle,
-    rgba(129, 140, 248, 0.12) 0%,
-    rgba(0, 0, 0, 0) 70%
-  );
-  filter: blur(100px);
-  animation: floatGlow 18s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes floatGlow {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    transform: translate(10%, 10%) scale(1.1);
-  }
-}
-
-/* Glassmorphism Classes */
+/* Panels */
 .glass-panel {
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
-  border-radius: 16px;
-  transition:
-    border-color var(--transition-normal),
-    box-shadow var(--transition-normal);
+  border-radius: 12px;
+  transition: border-color var(--transition-fast);
 }
 
 .glass-panel:hover {
-  border-color: rgba(168, 85, 247, 0.35);
-  box-shadow:
-    var(--shadow-lg),
-    0 0 18px rgba(168, 85, 247, 0.1);
+  border-color: var(--border-hover);
 }
 
 /* Layout Utilities */
@@ -231,7 +166,6 @@ body {
   background-color: rgba(168, 85, 247, 0.2);
   border-color: var(--primary);
   color: #ffffff;
-  text-shadow: 0 0 5px var(--primary);
 }
 
 /* Category Tags */
@@ -263,34 +197,31 @@ body {
   border-left-color: var(--color-unranked);
 }
 
-/* Micro-animations and Hover Effects */
+/* Flat Buttons and Interactive Elements */
 .btn-primary {
   background-color: var(--primary);
   color: #fff;
-  border: none;
+  border: 1px solid var(--primary);
   font-weight: 600;
   font-size: 0.9rem;
   letter-spacing: 0.02em;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow:
-    0 6px 18px rgba(168, 85, 247, 0.45),
-    var(--shadow-glow);
+  border-color: var(--primary-hover);
 }
 
 .btn-primary:active {
-  transform: translateY(1px);
+  background-color: #9333ea;
+  border-color: #9333ea;
 }
 
 .btn-secondary {
@@ -302,15 +233,15 @@ body {
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
 .btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-hover);
+  background-color: #241a45;
 }
 
 /* Custom Checkbox/Toggle Switch styling */

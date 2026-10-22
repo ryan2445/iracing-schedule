@@ -125,11 +125,9 @@
   }
 </script>
 
-<div class="bg-glow-effect"></div>
-
 <header class="app-header">
   <div class="header-logo">
-    <div class="logo-glow">
+    <div class="logo-badge">
       <Gauge size={28} />
     </div>
     <div class="title-block">
@@ -256,26 +254,15 @@
     gap: 16px;
   }
 
-  .logo-glow {
-    background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+  .logo-badge {
+    background-color: var(--primary);
     color: #fff;
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 18px var(--primary-glow);
-    animation: pulseGlow 3s ease-in-out infinite alternate;
-  }
-
-  @keyframes pulseGlow {
-    0% {
-      box-shadow: 0 0 10px var(--primary-glow);
-    }
-    100% {
-      box-shadow: 0 0 24px rgba(168, 85, 247, 0.75);
-    }
   }
 
   .title-block {
@@ -288,9 +275,7 @@
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.03em;
-    background: linear-gradient(to right, #ffffff, #c4b5fd, #a855f7);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-primary);
   }
 
   /* Dashboard Stats Grid (Modified to 2 Columns) */
@@ -418,15 +403,14 @@
 
   .sort-pill-btn:hover {
     color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.15);
-    background-color: rgba(255, 255, 255, 0.02);
+    border-color: var(--border-hover);
+    background-color: #241a45;
   }
 
   .sort-pill-btn.active {
     background-color: var(--primary);
     color: #fff;
     border-color: var(--primary);
-    box-shadow: 0 0 10px var(--primary-glow);
   }
 
   .sort-dir-arrow {
@@ -500,9 +484,8 @@
   }
 
   .btn-load-more:hover {
-    border-color: rgba(168, 85, 247, 0.5);
-    background-color: rgba(168, 85, 247, 0.1);
+    border-color: var(--primary);
+    background-color: var(--bg-surface);
     color: #fff;
-    box-shadow: 0 4px 18px rgba(168, 85, 247, 0.25);
   }
 </style>

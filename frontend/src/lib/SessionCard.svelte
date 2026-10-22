@@ -354,17 +354,16 @@
   .session-card {
     margin-bottom: 12px;
     cursor: pointer;
-    transition: all var(--transition-normal);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
     overflow: hidden;
   }
 
   .session-card:hover {
-    transform: translateX(4px);
+    border-color: var(--border-hover);
   }
 
   .session-card.near-start {
     border-left: 3px solid var(--primary);
-    box-shadow: 0 0 18px rgba(168, 85, 247, 0.25);
   }
 
   .card-header {
@@ -478,14 +477,9 @@
     border-radius: 4px;
     padding: 2px 6px;
     text-transform: uppercase;
-    background: linear-gradient(
-      135deg,
-      rgba(168, 85, 247, 0.15) 0%,
-      rgba(236, 72, 153, 0.15) 100%
-    );
+    background-color: rgba(236, 72, 153, 0.15);
     color: #f472b6;
     border: 1px solid rgba(236, 72, 153, 0.35);
-    text-shadow: 0 0 8px rgba(236, 72, 153, 0.2);
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -612,16 +606,14 @@
 
   .text-green {
     color: var(--accent-green);
-    border-color: rgba(57, 255, 20, 0.2);
-    background-color: rgba(57, 255, 20, 0.05);
-    text-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+    border-color: rgba(52, 211, 153, 0.3);
+    background-color: rgba(52, 211, 153, 0.08);
   }
 
   .text-primary-color {
     color: var(--primary);
     border-color: rgba(168, 85, 247, 0.3);
     background-color: rgba(168, 85, 247, 0.1);
-    text-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
   }
 
   .text-secondary {
@@ -720,7 +712,7 @@
   }
 
   .car-list li:hover {
-    border-color: rgba(168, 85, 247, 0.3);
+    border-color: var(--border-hover);
     color: var(--text-primary);
   }
 
@@ -800,10 +792,9 @@
     text-transform: uppercase;
     padding: 2px 6px;
     border-radius: 4px;
-    background-color: rgba(168, 85, 247, 0.25);
+    background-color: rgba(168, 85, 247, 0.2);
     color: var(--primary);
     border: 1px solid rgba(168, 85, 247, 0.4);
-    box-shadow: 0 0 8px rgba(168, 85, 247, 0.2);
   }
 
   .week-dates-cell {

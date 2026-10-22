@@ -46,17 +46,3 @@ npm install
 # Start the Vite development server
 npm run dev
 ```
-
----
-
-## Static Production Build & AWS Deployment
-
-### 1. Build the Static Files
-
-To compile the Svelte application into highly optimized, minified static files:
-
-```bash
-cd frontend
-npm run build
-aws s3 sync dist/ s3://<bucket>/tracker --delete
-```

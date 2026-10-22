@@ -211,8 +211,7 @@
 
   .search-input-wrapper input:focus {
     outline: none;
-    border-color: rgba(168, 85, 247, 0.5);
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
+    border-color: var(--primary);
   }
 
   .clear-search-btn {
@@ -254,7 +253,8 @@
 
   .filter-tag:hover {
     color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--border-hover);
+    background-color: #241a45;
   }
 
   /* Category specific tags selected states with theme matching borders */
@@ -266,35 +266,31 @@
   .filter-tag.sports-car.selected {
     background-color: var(--color-sports-car);
     border-color: var(--color-sports-car);
-    box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);
+    color: #000;
   }
   .filter-tag.formula-car.selected {
     background-color: var(--color-formula-car);
     border-color: var(--color-formula-car);
     color: #000;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
   }
   .filter-tag.oval.selected {
     background-color: var(--color-oval);
     border-color: var(--color-oval);
     color: #000;
-    box-shadow: 0 0 10px rgba(255, 170, 0, 0.25);
   }
   .filter-tag.dirt-oval.selected {
     background-color: var(--color-dirt-oval);
     border-color: var(--color-dirt-oval);
-    box-shadow: 0 0 10px rgba(139, 90, 43, 0.25);
+    color: #fff;
   }
   .filter-tag.dirt-road.selected {
     background-color: var(--color-dirt-road);
     border-color: var(--color-dirt-road);
     color: #000;
-    box-shadow: 0 0 10px rgba(0, 255, 102, 0.25);
   }
   .filter-tag.unranked.selected {
     background-color: var(--color-unranked, #94a3b8);
     border-color: var(--color-unranked, #94a3b8);
     color: #000;
-    box-shadow: 0 0 10px rgba(148, 163, 184, 0.25);
   }
 </style>
