@@ -12,7 +12,7 @@
   } from 'lucide-svelte'
   import type { Session } from './scheduleEngine'
 
-  let { session }: { session: Session } = $props<{ session: Session }>()
+  let { session }: { session: Session } = $props()
 
   // Svelte 5 State Runes
   let isExpanded = $state(false)

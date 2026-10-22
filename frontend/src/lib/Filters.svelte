@@ -1,16 +1,18 @@
 <script lang="ts">
   import { Search, X, SlidersHorizontal } from 'lucide-svelte'
 
+  interface Props {
+    search?: string
+    selectedCategories?: string[]
+    availableCategories?: string[]
+  }
+
   // Svelte 5 Props using runes
   let {
     search = $bindable(''),
     selectedCategories = $bindable([]),
     availableCategories = []
-  } = $props<{
-    search: string
-    selectedCategories: string[]
-    availableCategories: string[]
-  }>()
+  }: Props = $props()
 
   // Handle category toggle
   function toggleCategory(category: string) {
