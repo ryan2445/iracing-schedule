@@ -1,24 +1,6 @@
 # iRacing Race Tracker
 
-Lists upcoming iRacing races with extensive filtering options and multiple mobile-friendly views. Features a gorgeous high-fidelity dark mode, dynamic linear timeline schedules, and an interactive weekly calendar planner.
-
-## Architecture
-
-This project is built as a **100% serverless static website** that can be hosted on AWS (via S3 + CloudFront or AWS Amplify) for $0/month.
-
-- **Frontend**: Svelte 5 (Vite, TypeScript, Lucide Icons, custom CSS variables, and a dark sim-racing theme). All session-generation logic, search queries, category filtering, and sorting are computed entirely on the client side in the browser.
-- **Backend (Build-Time Parser)**: A Python 3.12+ command-line tool that parses the official static iRacing Season Schedule PDF and pre-compiles the recurrence rules, track associations, and session schedules into a bundled JSON database.
-
----
-
-## Features
-
-- **Linear Timeline**: Displays active race sessions in chronological order with live browser-based countdowns.
-- **Calendar Planner**: Interactive 7-day linear day selector that highlights daily races with timeline tracks.
-- **Comprehensive Filters**: Zero-latency search and filter options by category (Sports Car, Formula, Oval, etc.), license class, setup constraints, or custom search query.
-- **Static & Offline Capable**: Because all schedule computations are written in TypeScript, the site does not need a running backend API server and runs entirely offline after loading.
-
----
+Lists upcoming iRacing races with filtering options and mobile-friendly views.
 
 ## Local Development & Build Quickstart
 
