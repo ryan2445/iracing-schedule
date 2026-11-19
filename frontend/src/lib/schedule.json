@@ -595,8 +595,8 @@
       "series_name": "ARCA Menards Series - Fixed",
       "original_title": "ARCA Menards Series - 2026 Season 4 - Fixed",
       "category": "Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "ARCA Chevrolet SS",
@@ -792,8 +792,8 @@
       "series_name": "CARS Tour Late Model Stocks - Fixed",
       "original_title": "CARS Tour Late Model Stocks - Fixed - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "Late Model Stock"
@@ -987,8 +987,8 @@
       "series_name": "Draft Master Challenge by Simagic",
       "original_title": "Draft Master Challenge by Simagic - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "See race week for cars in use that week."
@@ -1182,8 +1182,8 @@
       "series_name": "Jr Open Wheel Oval Challenge",
       "original_title": "Jr Open Wheel Oval Challenge - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Indy Pro 2000 PM-18"
@@ -1377,8 +1377,8 @@
       "series_name": "SK Modified Series - Fixed",
       "original_title": "SK Modified Series - 2026 Season 4 - Fixed",
       "category": "Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "Modified - SK"
@@ -1572,8 +1572,8 @@
       "series_name": "SK Modified Weekly Series",
       "original_title": "SK Modified Weekly Series - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Modified - SK"
@@ -1767,8 +1767,8 @@
       "series_name": "SRX Series - Fixed",
       "original_title": "SRX Series - Fixed - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "SRX"
@@ -1962,8 +1962,8 @@
       "series_name": "CARS Tour Late Model Stocks",
       "original_title": "CARS Tour Late Model Stocks - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Late Model Stock"
@@ -2157,8 +2157,8 @@
       "series_name": "Indy NXT Oval Series - Fixed",
       "original_title": "Indy NXT Oval Series - Fixed - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dallara IL-15"
@@ -2352,8 +2352,8 @@
       "series_name": "Legends Cup by Go Motorsports Shop",
       "original_title": "Legends Cup by Go Motorsports Shop - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Legends Ford '34 Coupe"
@@ -2547,8 +2547,8 @@
       "series_name": "NASCAR Class C Series - Fixed",
       "original_title": "NASCAR Class C Series - Fixed - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "NASCAR Truck Ford F150",
@@ -2745,8 +2745,8 @@
       "series_name": "NASCAR Gen 4 Cup Series - Fixed",
       "original_title": "NASCAR Gen 4 Cup Series - 2026 Season 4 Fixed",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Gen 4 Chevrolet Monte Carlo - 2003",
@@ -2941,8 +2941,8 @@
       "series_name": "NASCAR Gen 4 Grand National Series - Fixed",
       "original_title": "NASCAR Gen 4 Grand National Series - 2026 Season 4 Fixed",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Gen 4 Grand National"
@@ -3136,8 +3136,8 @@
       "series_name": "NASCAR iRacing Class C Series Series",
       "original_title": "NASCAR iRacing Class C Series Series - 2026 Season",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "NASCAR Truck Ford F150",
@@ -3712,8 +3712,8 @@
       "series_name": "NASCAR iRacing Series - Fixed",
       "original_title": "NASCAR iRacing Series - 2026 Season Fixed",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "NASCAR Cup Series Next Gen Chevrolet Camaro ZL1",
@@ -4245,8 +4245,8 @@
       "series_name": "NASCAR iRacing Series - Open",
       "original_title": "NASCAR iRacing Series - 2026 Season Open",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "NASCAR Cup Series Next Gen Chevrolet Camaro ZL1",
@@ -4778,8 +4778,8 @@
       "series_name": "NASCAR Modified Tour - Fixed",
       "original_title": "NASCAR Modified Tour - 2026 Season Fixed",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Modified - NASCAR Whelen Tour"
@@ -5169,8 +5169,8 @@
       "series_name": "NASCAR Tour Modified Series",
       "original_title": "NASCAR Tour Modified Series - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Modified - NASCAR Whelen Tour"
@@ -5364,8 +5364,8 @@
       "series_name": "NASCAR Tour Modified Series - Fixed",
       "original_title": "NASCAR Tour Modified Series - Fixed - 2026 Season 4 - Fixed",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Modified - NASCAR Whelen Tour"
@@ -5559,8 +5559,8 @@
       "series_name": "Street Stock Series by Next Level Racing",
       "original_title": "Street Stock Series by Next Level Racing - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Street Stock - Eagle T3",
@@ -5756,8 +5756,8 @@
       "series_name": "Super Late Model Series",
       "original_title": "Super Late Model Series - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Super Late Model"
@@ -5951,8 +5951,8 @@
       "series_name": "Super Late Model Series - Fixed",
       "original_title": "Super Late Model Series - 2026 Season 4 - Fixed",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Super Late Model"
@@ -6146,8 +6146,8 @@
       "series_name": "Super Late Model Tour - Fixed",
       "original_title": "Super Late Model Tour - 2026 Season Fixed",
       "category": "Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Super Late Model"
@@ -6551,8 +6551,8 @@
       "series_name": "INDYCAR Series - Oval - Fixed",
       "original_title": "INDYCAR Series - Oval - Fixed - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Dallara IR18"
@@ -6746,8 +6746,8 @@
       "series_name": "NASCAR 1987 Legends Cup - Fixed",
       "original_title": "NASCAR 1987 Legends Cup  - 2026 Season 4 Fixed",
       "category": "Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "NASCAR Legends Chevrolet Monte Carlo - 1987",
@@ -6944,8 +6944,8 @@
       "series_name": "NASCAR iRacing Class B Series Series",
       "original_title": "NASCAR iRacing Class B Series Series - 2026 Season",
       "category": "Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "NASCAR O'Reilly Chevrolet Camaro",
@@ -7519,8 +7519,8 @@
       "series_name": "NASCAR O'Reilly Auto Parts Series - Fixed",
       "original_title": "NASCAR O'Reilly Auto Parts Series - Fixed - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "NASCAR O'Reilly Chevrolet Camaro",
@@ -7716,8 +7716,8 @@
       "series_name": "Silver Crown Cup",
       "original_title": "Silver Crown Cup - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Silver Crown"
@@ -7911,8 +7911,8 @@
       "series_name": "Sprint Car Cup",
       "original_title": "Sprint Car Cup - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Sprint Car"
@@ -8106,8 +8106,8 @@
       "series_name": "NASCAR Class A Series",
       "original_title": "NASCAR Class A Series - 2026 Season 4",
       "category": "Oval",
-      "license_group": "Class B",
-      "license_group_id": 4,
+      "license_group": "Class A",
+      "license_group_id": 5,
       "fixed_setup": false,
       "cars": [
         "NASCAR Cup Series Next Gen Chevrolet Camaro ZL1",
@@ -8303,8 +8303,8 @@
       "series_name": "NASCAR Class A Series - Fixed",
       "original_title": "NASCAR Class A Series - Fixed - 2026 Season 4 Fixed",
       "category": "Oval",
-      "license_group": "Class B",
-      "license_group_id": 4,
+      "license_group": "Class A",
+      "license_group_id": 5,
       "fixed_setup": true,
       "cars": [
         "NASCAR Cup Series Next Gen Chevrolet Camaro ZL1",
@@ -8892,8 +8892,8 @@
       "series_name": "BMW M Power Challenge",
       "original_title": "BMW M Power Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "BMW M2 Racing (G87)"
@@ -9087,8 +9087,8 @@
       "series_name": "Caterham Academy Challenge",
       "original_title": "Caterham Academy Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Caterham Academy"
@@ -9282,8 +9282,8 @@
       "series_name": "Clio Cup",
       "original_title": "Clio Cup - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Renault Clio"
@@ -9477,8 +9477,8 @@
       "series_name": "Ford Mustang Challenge by Skip Barber",
       "original_title": "Ford Mustang Challenge by Skip Barber - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Ford Mustang GT4"
@@ -9672,8 +9672,8 @@
       "series_name": "Global Sports Car Challenge by Fanatec",
       "original_title": "Global Sports Car Challenge by Fanatec - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Cadillac CTS-V Racecar",
@@ -9868,8 +9868,8 @@
       "series_name": "Legends Road Cup by Go Motorsports Shop",
       "original_title": "Legends Road Cup by Go Motorsports Shop - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Legends Ford '34 Coupe"
@@ -10063,8 +10063,8 @@
       "series_name": "Mission R Challenge",
       "original_title": "Mission R Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Porsche Mission R"
@@ -10258,8 +10258,8 @@
       "series_name": "NASCAR Euro Series",
       "original_title": "NASCAR Euro Series 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "EURO NASCAR V8GP"
@@ -10453,8 +10453,8 @@
       "series_name": "Nurburgring Endurance Championship",
       "original_title": "Nurburgring Endurance Championship - 2026 Season",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -10656,8 +10656,8 @@
       "series_name": "Production Car Challenge by Sim-Lab",
       "original_title": "Production Car Challenge by Sim-Lab - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "BMW M2 Racing (G87)",
@@ -10854,8 +10854,8 @@
       "series_name": "Production Endurance Challenge",
       "original_title": "Production Endurance Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "BMW M2 Racing (G87)",
@@ -11068,8 +11068,8 @@
       "series_name": "Rain Master Challenge by Podium 1",
       "original_title": "Rain Master Challenge by Podium 1 - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -11273,8 +11273,8 @@
       "series_name": "Spec Racer Ford Challenge",
       "original_title": "Spec Racer Ford Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "SCCA Spec Racer Ford"
@@ -11468,8 +11468,8 @@
       "series_name": "TCR Virtual Challenge",
       "original_title": "TCR Virtual Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Hyundai Elantra N TCR",
@@ -11666,8 +11666,8 @@
       "series_name": "TCR Virtual Challenge - Fixed",
       "original_title": "TCR Virtual Challenge - Fixed - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "Hyundai Elantra N TCR",
@@ -11864,8 +11864,8 @@
       "series_name": "Toyota GR86 Cup by SIMAGIC",
       "original_title": "Toyota GR86 Cup by SIMAGIC - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Toyota GR86"
@@ -12060,8 +12060,8 @@
       "series_name": "Track Day",
       "original_title": "Track Day - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Radical SR8",
@@ -12267,8 +12267,8 @@
       "series_name": "2026 Britcar 24 Presented by Cosworth",
       "original_title": "2026 Britcar 24 Presented by Cosworth",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -12345,8 +12345,8 @@
       "series_name": "Advanced Mazda MX-5 Cup by Heusinkveld",
       "original_title": "Advanced Mazda MX-5 Cup by Heusinkveld - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Global Mazda MX-5 Cup"
@@ -12540,8 +12540,8 @@
       "series_name": "Caterham 420R Cup",
       "original_title": "Caterham 420R Cup - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Caterham 420R"
@@ -12735,8 +12735,8 @@
       "series_name": "Creventic Endurance Series",
       "original_title": "Creventic Endurance Series - 2026 Season",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -12858,8 +12858,8 @@
       "series_name": "Ferrari 296 Challenge",
       "original_title": "Ferrari 296 Challenge 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Ferrari 296 Challenge"
@@ -13053,8 +13053,8 @@
       "series_name": "GT Endurance Series by Simucube",
       "original_title": "GT Endurance Series by Simucube - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -13274,8 +13274,8 @@
       "series_name": "GT4 Falken Tyre Challenge",
       "original_title": "GT4 Falken Tyre Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Ford Mustang GT4",
@@ -13474,8 +13474,8 @@
       "series_name": "IMSA Michelin Pilot Challenge",
       "original_title": "IMSA Michelin Pilot Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Ford Mustang GT4",
@@ -13615,8 +13615,8 @@
       "series_name": "IMSA Sportscar Endurance Challenge",
       "original_title": "IMSA Sportscar Endurance Challenge - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Ligier JS P320",
@@ -13753,8 +13753,8 @@
       "series_name": "IMSA Vintage Series",
       "original_title": "IMSA Vintage Series - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Nissan GTP ZX-T",
@@ -13949,8 +13949,8 @@
       "series_name": "iRacing Porsche Cup - Fixed by CONSPIT",
       "original_title": "iRacing Porsche Cup - Fixed by CONSPIT - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Porsche 911 Cup (992.2)"
@@ -14144,8 +14144,8 @@
       "series_name": "iRacing Porsche Cup by CONSPIT",
       "original_title": "iRacing Porsche Cup by CONSPIT - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Porsche 911 Cup (992.2)"
@@ -14339,8 +14339,8 @@
       "series_name": "LMP3 Trophy",
       "original_title": "LMP3 Trophy - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Ligier JS P320"
@@ -14534,8 +14534,8 @@
       "series_name": "Porsche Esports Supercup Global Open Qualifiers",
       "original_title": "Porsche Esports Supercup Global Open Qualifiers",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Porsche 911 Cup (992.2)"
@@ -14638,8 +14638,8 @@
       "series_name": "Proto-GT Challenge",
       "original_title": "Proto-GT Challenge  2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "HPD ARX-01c",
@@ -14836,8 +14836,8 @@
       "series_name": "Radical Esports Cup",
       "original_title": "Radical Esports Cup - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Radical SR10"
@@ -15031,8 +15031,8 @@
       "series_name": "Ring Meister by LVRY",
       "original_title": "Ring Meister by LVRY - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "See race week for cars in use that week."
@@ -15215,7 +15215,7 @@
         "interval_hours": 1,
         "even_hours": null,
         "minutes": [
-          30
+          0
         ],
         "specific_slots": [],
         "is_timeslot": false
@@ -15226,8 +15226,8 @@
       "series_name": "Sports Car Challenge by Falken Tyre",
       "original_title": "Sports Car Challenge by Falken Tyre - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Ligier JS P320",
@@ -15427,8 +15427,8 @@
       "series_name": "Stock Car Brasil",
       "original_title": "Stock Car Brasil - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Stock Car Brasil Chevrolet Cruze",
@@ -15623,8 +15623,8 @@
       "series_name": "Supercars Series",
       "original_title": "Supercars Series - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Supercars Ford Mustang Gen 3",
@@ -15819,8 +15819,8 @@
       "series_name": "Supercars Series - Australian Servers",
       "original_title": "Supercars Series - Australian Servers - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Supercars Ford Mustang Gen 3",
@@ -16015,8 +16015,8 @@
       "series_name": "Global Endurance Tour",
       "original_title": "Global Endurance Tour - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Porsche 963 GTP",
@@ -16158,8 +16158,8 @@
       "series_name": "GT Sprint Series by Simucube",
       "original_title": "GT Sprint Series by Simucube - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -16363,8 +16363,8 @@
       "series_name": "GT3 Challenge Fixed by Fanatec",
       "original_title": "GT3 Challenge Fixed by Fanatec - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -16568,8 +16568,8 @@
       "series_name": "GT3 Regional Tour by SensitHaptics - Americas",
       "original_title": "GT3 Regional Tour by SensitHaptics - Americas - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -16773,8 +16773,8 @@
       "series_name": "GT3 Regional Tour by SensitHaptics - Europe",
       "original_title": "GT3 Regional Tour by SensitHaptics - Europe - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -16978,8 +16978,8 @@
       "series_name": "GT3 Regional Tour by SensitHaptics-Asia Pacific",
       "original_title": "GT3 Regional Tour by SensitHaptics-Asia Pacific - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -17183,8 +17183,8 @@
       "series_name": "GTE Sprint Series",
       "original_title": "GTE Sprint Series - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Ford GTE",
@@ -17382,8 +17382,8 @@
       "series_name": "IMSA Endurance Series",
       "original_title": "IMSA Endurance Series - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Porsche 963 GTP",
@@ -17530,8 +17530,8 @@
       "series_name": "iRacing DTM Series",
       "original_title": "iRacing DTM Series - 2026 Season",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG GT3 2020",
@@ -17700,8 +17700,8 @@
       "series_name": "LMP2 Challenge - Fixed",
       "original_title": "LMP2 Challenge  - 2026 Season 4 - Fixed",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Dallara P217"
@@ -17895,8 +17895,8 @@
       "series_name": "Prototype Challenge - Fixed",
       "original_title": "Prototype Challenge  - 2026 Season 4 - Fixed",
       "category": "Sports Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Porsche 963 GTP",
@@ -18095,8 +18095,8 @@
       "series_name": "IMSA iRacing Series - Fixed by GO Fast",
       "original_title": "IMSA iRacing Series - Fixed by GO Fast - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class B",
-      "license_group_id": 4,
+      "license_group": "Class A",
+      "license_group_id": 5,
       "fixed_setup": true,
       "cars": [
         "Porsche 963 GTP",
@@ -18306,8 +18306,8 @@
       "series_name": "IMSA iRacing Series by GO Fast",
       "original_title": "IMSA iRacing Series by GO Fast - 2026 Season 4",
       "category": "Sports Car",
-      "license_group": "Class B",
-      "license_group_id": 4,
+      "license_group": "Class A",
+      "license_group_id": 5,
       "fixed_setup": false,
       "cars": [
         "Porsche 963 GTP",
@@ -18911,8 +18911,8 @@
       "series_name": "FIA F4 Esports Regional Tour - America",
       "original_title": "FIA F4 Esports Regional Tour - America - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "FIA F4"
@@ -19106,8 +19106,8 @@
       "series_name": "FIA F4 Esports Regional Tour - Asia Pacific",
       "original_title": "FIA F4 Esports Regional Tour - Asia Pacific - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "FIA F4"
@@ -19301,8 +19301,8 @@
       "series_name": "FIA F4 Esports Regional Tour - Europe",
       "original_title": "FIA F4 Esports Regional Tour - Europe - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "FIA F4"
@@ -19496,8 +19496,8 @@
       "series_name": "FIA Formula 4 Challenge - Fixed",
       "original_title": "FIA Formula 4 Challenge - Fixed - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "FIA F4"
@@ -19691,8 +19691,8 @@
       "series_name": "Motorsport UK FF 1600 Trophy by Thrustmaster",
       "original_title": "Motorsport UK FF 1600 Trophy by Thrustmaster - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Ray FF1600"
@@ -19886,8 +19886,8 @@
       "series_name": "Skip Barber Race Series",
       "original_title": "Skip Barber Race Series - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Skip Barber Formula 2000"
@@ -20081,8 +20081,8 @@
       "series_name": "US Open Wheel D - USF 2000 Series - Fixed",
       "original_title": "US Open Wheel D - USF 2000 Series  - 2026 Season 4 - Fixed",
       "category": "Formula Car",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "USF 2000"
@@ -20276,8 +20276,8 @@
       "series_name": "Dallara Formula iR",
       "original_title": "Dallara Formula iR - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Dallara iR-01"
@@ -20471,8 +20471,8 @@
       "series_name": "Formula A - Grand Prix Tour - Fixed",
       "original_title": "Formula A - Grand Prix Tour - Fixed - 2026 Season",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Mercedes-AMG W13 E Performance"
@@ -20875,8 +20875,8 @@
       "series_name": "Formula C - Dallara F3 Series",
       "original_title": "Formula C -  Dallara F3 Series - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Dallara F3"
@@ -21070,8 +21070,8 @@
       "series_name": "Formula C - Dallara F3 Series - Fixed",
       "original_title": "Formula C - Dallara F3 Series -2026 Season 4 - Fixed",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dallara F3"
@@ -21265,8 +21265,8 @@
       "series_name": "Formula C - Super Formula Lights - Fixed by RSS",
       "original_title": "Formula C - Super Formula Lights - Fixed by RSS - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Super Formula Lights"
@@ -21460,8 +21460,8 @@
       "series_name": "Formula C - Super Formula Lights by RSS",
       "original_title": "Formula C - Super Formula Lights by RSS - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Super Formula Lights"
@@ -21655,8 +21655,8 @@
       "series_name": "Indy NXT Road Series - Fixed",
       "original_title": "Indy NXT Road Series - Fixed - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dallara IL-15"
@@ -21850,8 +21850,8 @@
       "series_name": "iRacing Formula A - Grand Prix Tour",
       "original_title": "iRacing Formula A - Grand Prix Tour - 2026 Season",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG W13 E Performance"
@@ -22254,8 +22254,8 @@
       "series_name": "iRacing Lotus 79 Grand Prix Series",
       "original_title": "iRacing Lotus 79 Grand Prix Series- 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Lotus 79"
@@ -22449,8 +22449,8 @@
       "series_name": "Lotus 49 Grand Prix Legends",
       "original_title": "Lotus 49 Grand Prix Legends - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Lotus 49"
@@ -22644,8 +22644,8 @@
       "series_name": "Vintage Grand Prix Tour",
       "original_title": "Vintage Grand Prix Tour - 2026 Season",
       "category": "Formula Car",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Lotus 79"
@@ -22916,8 +22916,8 @@
       "series_name": "Formula B - Super Formula Series - Fixed",
       "original_title": "Formula B - Super Formula Series - Fixed - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Super Formula SF23 - Toyota",
@@ -23112,8 +23112,8 @@
       "series_name": "Formula B - Super Formula Series",
       "original_title": "Formula B - Super Formula Series 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Super Formula SF23 - Toyota",
@@ -23308,8 +23308,8 @@
       "series_name": "INDYCAR Series",
       "original_title": "INDYCAR Series - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Dallara IR18"
@@ -23503,8 +23503,8 @@
       "series_name": "INDYCAR Series - Fixed",
       "original_title": "INDYCAR Series - Fixed - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Dallara IR18"
@@ -23698,8 +23698,8 @@
       "series_name": "Formula A - Cosworth Cup Grand Prix",
       "original_title": "Formula A - Cosworth Cup Grand Prix - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class B",
-      "license_group_id": 4,
+      "license_group": "Class A",
+      "license_group_id": 5,
       "fixed_setup": false,
       "cars": [
         "Mercedes-AMG W13 E Performance"
@@ -23893,8 +23893,8 @@
       "series_name": "Formula A - Cosworth Cup Grand Prix - Fixed",
       "original_title": "Formula A - Cosworth Cup Grand Prix - Fixed - 2026 Season 4",
       "category": "Formula Car",
-      "license_group": "Class B",
-      "license_group_id": 4,
+      "license_group": "Class A",
+      "license_group_id": 5,
       "fixed_setup": true,
       "cars": [
         "Mercedes-AMG W13 E Performance"
@@ -24662,7 +24662,7 @@
         "interval_hours": 1,
         "even_hours": null,
         "minutes": [
-          0
+          30
         ],
         "specific_slots": [],
         "is_timeslot": false
@@ -24868,8 +24868,8 @@
       "series_name": "Dirt Legends Cup",
       "original_title": "Dirt Legends Cup - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Dirt Legends Ford '34 Coupe"
@@ -25063,8 +25063,8 @@
       "series_name": "DIRTcar 305 Sprint Car Series by Fanatec - Fixed",
       "original_title": "DIRTcar 305 Sprint Car Series by Fanatec - 2026 Season 4 Fixed",
       "category": "Dirt Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "Dirt Sprint Car - 305"
@@ -25258,8 +25258,8 @@
       "series_name": "DIRTcar 358 Modified Series",
       "original_title": "DIRTcar 358 Modified Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Dirt 358 Modified"
@@ -25453,8 +25453,8 @@
       "series_name": "DIRTcar Limited Late Model Series - Fixed",
       "original_title": "DIRTcar Limited Late Model Series - 2026 Season 4 Fixed",
       "category": "Dirt Oval",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "Dirt Late Model - Limited"
@@ -25648,8 +25648,8 @@
       "series_name": "Big Block Modified Series",
       "original_title": "Big Block Modified Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Dirt Big Block Modified"
@@ -25843,8 +25843,8 @@
       "series_name": "Big Block Modified Series - Fixed",
       "original_title": "Big Block Modified Series - Fixed - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt Big Block Modified"
@@ -26038,8 +26038,8 @@
       "series_name": "Dirt 410 Sprint Car Tour - Fixed",
       "original_title": "Dirt 410 Sprint Car Tour - 2026 Season Fixed",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt Sprint Car - 410"
@@ -26583,8 +26583,8 @@
       "series_name": "Dirt Midget Cup",
       "original_title": "Dirt Midget Cup - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Dirt Midget"
@@ -26778,8 +26778,8 @@
       "series_name": "Dirt Midget Cup - Fixed",
       "original_title": "Dirt Midget Cup - Fixed - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt Midget"
@@ -26973,8 +26973,8 @@
       "series_name": "Dirt Super Late Model Tour - Fixed",
       "original_title": "Dirt Super Late Model Tour - 2026 Season Fixed",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt Late Model - Super"
@@ -27546,8 +27546,8 @@
       "series_name": "DIRTcar 360 Sprint Car Series",
       "original_title": "DIRTcar 360 Sprint Car Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Dirt Sprint Car - 360"
@@ -27741,8 +27741,8 @@
       "series_name": "DIRTcar 360 Sprint Car Series - Fixed",
       "original_title": "DIRTcar 360 Sprint Car Series - Fixed 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt Sprint Car - 360"
@@ -27936,8 +27936,8 @@
       "series_name": "DIRTcar Class C Dirt Street Stock Series - Fixed",
       "original_title": "DIRTcar Class C Dirt Street Stock Series - 2026 Season 4 Fixed",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt Street Stock"
@@ -28131,8 +28131,8 @@
       "series_name": "DIRTcar Pro Late Model Series",
       "original_title": "DIRTcar Pro Late Model Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Dirt Late Model - Pro"
@@ -28326,8 +28326,8 @@
       "series_name": "DIRTcar Pro Late Model Series - Fixed",
       "original_title": "DIRTcar Pro Late Model Series - Fixed - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt Late Model - Pro"
@@ -28521,8 +28521,8 @@
       "series_name": "DIRTcar UMP Modified Series - Fixed",
       "original_title": "DIRTcar UMP Modified Series - Fixed - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Dirt UMP Modified"
@@ -28716,8 +28716,8 @@
       "series_name": "Outlaw Micro Showdown",
       "original_title": "Outlaw Micro Showdown - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "See race week for cars in use that week."
@@ -28911,8 +28911,8 @@
       "series_name": "USAC 360 Sprint Car Series",
       "original_title": "USAC 360 Sprint Car Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": false,
       "cars": [
         "Dirt Sprint Car - 360 Non-Winged"
@@ -29106,8 +29106,8 @@
       "series_name": "AMSOIL USAC Sprint Car",
       "original_title": "AMSOIL USAC Sprint Car 2026 - Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Dirt Sprint Car - 410 Non-Winged"
@@ -29301,8 +29301,8 @@
       "series_name": "DIRTcar UMP Modified Series",
       "original_title": "DIRTcar UMP Modified Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Dirt UMP Modified"
@@ -29496,8 +29496,8 @@
       "series_name": "World of Outlaws Late Model Series",
       "original_title": "World of Outlaws Late Model Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Dirt Late Model - Super"
@@ -29691,8 +29691,8 @@
       "series_name": "World of Outlaws Late Model Series - Fixed",
       "original_title": "World of Outlaws Late Model Series - 2026 Season 4 - Fixed",
       "category": "Dirt Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Dirt Late Model - Super"
@@ -29886,8 +29886,8 @@
       "series_name": "World of Outlaws Sprint Car Series",
       "original_title": "World of Outlaws Sprint Car Series - 2026 Season 4",
       "category": "Dirt Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "Dirt Sprint Car - 410"
@@ -30081,8 +30081,8 @@
       "series_name": "World of Outlaws Sprint Car Series - Fixed",
       "original_title": "World of Outlaws Sprint Car Series - 2026 Season 4 - Fixed",
       "category": "Dirt Oval",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": true,
       "cars": [
         "Dirt Sprint Car - 410"
@@ -30966,8 +30966,8 @@
       "series_name": "Advanced Pro2 Lite Off Road Series",
       "original_title": "Advanced Pro2 Lite Off Road Series - 2026 Season 4",
       "category": "Dirt Road",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "Lucas Oil Off Road Pro 2 Lite"
@@ -31161,8 +31161,8 @@
       "series_name": "iRX Volkswagen Beetle Lite Series",
       "original_title": "iRX Volkswagen Beetle Lite Series - 2026 Season 4",
       "category": "Dirt Road",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": false,
       "cars": [
         "VW Beetle - Lite"
@@ -31356,8 +31356,8 @@
       "series_name": "Pro 4 Off-Road Series - Fixed",
       "original_title": "Pro 4 Off-Road Series - Fixed - 2026 Season 4",
       "category": "Dirt Road",
-      "license_group": "Rookie",
-      "license_group_id": 1,
+      "license_group": "Class D",
+      "license_group_id": 2,
       "fixed_setup": true,
       "cars": [
         "Lucas Oil Off Road Pro 4 Truck"
@@ -31551,8 +31551,8 @@
       "series_name": "Pro 2 Off-Road Series - Fixed",
       "original_title": "Pro 2 Off-Road Series - Fixed - 2026 Season 4",
       "category": "Dirt Road",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "Lucas Oil Off Road Pro 2 Truck"
@@ -31746,8 +31746,8 @@
       "series_name": "Rallycross Series - Fixed",
       "original_title": "Rallycross Series - Fixed - 2026 Season 4",
       "category": "Dirt Road",
-      "license_group": "Class D",
-      "license_group_id": 2,
+      "license_group": "Class C",
+      "license_group_id": 3,
       "fixed_setup": true,
       "cars": [
         "VW Beetle",
@@ -31943,8 +31943,8 @@
       "series_name": "Rallycross Series",
       "original_title": "Rallycross Series - 2026 Season 4",
       "category": "Dirt Road",
-      "license_group": "Class C",
-      "license_group_id": 3,
+      "license_group": "Class B",
+      "license_group_id": 4,
       "fixed_setup": false,
       "cars": [
         "VW Beetle",

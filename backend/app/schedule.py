@@ -1,10 +1,11 @@
+import glob
+import hashlib
+import logging
 import os
 import re
-import glob
-import logging
-import hashlib
 from datetime import datetime, timedelta
 from typing import Any
+
 import pypdf
 
 logger = logging.getLogger(__name__)
@@ -18,9 +19,14 @@ def get_pdf_path() -> str:
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
     candidates = glob.glob(os.path.join(base_dir, "iracing_season_*_schedule.pdf"))
     if not candidates:
-        candidates = glob.glob("iracing_season_*_schedule.pdf") + glob.glob("../iracing_season_*_schedule.pdf")
+        candidates = glob.glob("iracing_season_*_schedule.pdf") + glob.glob(
+            "../iracing_season_*_schedule.pdf"
+        )
     if candidates:
-        candidates.sort(key=lambda p: [int(c) if c.isdigit() else c for c in re.split(r"(\d+)", p)], reverse=True)
+        candidates.sort(
+            key=lambda p: [int(c) if c.isdigit() else c for c in re.split(r"(\d+)", p)],
+            reverse=True,
+        )
         return candidates[0]
     return os.path.join(base_dir, "iracing_season_4_schedule.pdf")
 
@@ -101,7 +107,9 @@ class ScheduleEngine:
                     continue
 
                 title = candidates[0]
-                cars_str = self._join_candidate_lines(candidates[1:]) if len(candidates) > 1 else title
+                cars_str = (
+                    self._join_candidate_lines(candidates[1:]) if len(candidates) > 1 else title
+                )
                 display_title = self._clean_series_title(title)
                 
                 lic_line = all_text_lines[idx].strip()
@@ -115,12 +123,17 @@ class ScheduleEngine:
                 )
                 if index_in_list < len(toc_series):
                     category = toc_series[index_in_list][1]
+                    lic_group_name, lic_group_id = toc_series[index_in_list][2]
                 else:
                     category = line_to_category.get(idx, "Oval")
                 
                 weeks = self._parse_weeks(all_text_lines, idx, next_idx, category)
                 is_team_racing = "team racing" in lic_line.lower()
-                min_drivers = self._parse_min_drivers(all_text_lines, idx, next_idx) if is_team_racing else None
+                min_drivers = (
+                    self._parse_min_drivers(all_text_lines, idx, next_idx)
+                    if is_team_racing
+                    else None
+                )
 
                 series_temp.append(
                     {
@@ -147,16 +160,25 @@ class ScheduleEngine:
         except Exception as e:
             logger.error(f"Error parsing PDF schedule: {e}", exc_info=True)
 
-    def _parse_toc(self, reader: pypdf.PdfReader) -> list[tuple[str, str]]:
-        """Extracts ordered list of (title, category) from Table of Contents."""
+    def _parse_toc(self, reader: pypdf.PdfReader) -> list[tuple[str, str, tuple[str, int]]]:
+        """Extracts ordered (title, category, (license_name, license_id)) from TOC."""
         toc_lines: list[str] = []
         for i in range(min(5, len(reader.pages))):
             t = reader.pages[i].extract_text()
             if t:
                 toc_lines.extend(t.split("\n"))
 
+        toc_license_map: dict[str, tuple[str, int]] = {
+            "R": ("Rookie", 1),
+            "D": ("Class D", 2),
+            "C": ("Class C", 3),
+            "B": ("Class B", 4),
+            "A": ("Class A", 5),
+        }
+
         current_cat = "Oval"
-        series_info: list[tuple[str, str]] = []
+        current_lic: tuple[str, int] = ("Rookie", 1)
+        series_info: list[tuple[str, str, tuple[str, int]]] = []
         for line in toc_lines:
             s = line.strip()
             if not s or ". ." not in s:
@@ -166,9 +188,11 @@ class ScheduleEngine:
             if u in categories_map:
                 current_cat = categories_map[u]
                 continue
-            if re.match(r"^[RDCBA]\s+Class\s+Series", first_part, re.IGNORECASE):
+            lic_match = re.match(r"^([RDCBA])\s+Class\s+Series", first_part, re.IGNORECASE)
+            if lic_match:
+                current_lic = toc_license_map.get(lic_match.group(1).upper(), ("Rookie", 1))
                 continue
-            series_info.append((first_part, current_cat))
+            series_info.append((first_part, current_cat, current_lic))
         return series_info
 
     def _build_line_to_category_map(self, all_text_lines: list[str]) -> dict[int, str]:
@@ -188,24 +212,32 @@ class ScheduleEngine:
         if not s or s.isdigit():
             return True
         u = s.upper()
-        if u in categories_map or re.match(r"^[RDCBA]\s+Class\s+Series", s, re.IGNORECASE) or "rule set" in s.lower():
+        if (
+            u in categories_map
+            or re.match(r"^[RDCBA]\s+Class\s+Series", s, re.IGNORECASE)
+            or "rule set" in s.lower()
+        ):
             return True
         if any(
             s.startswith(p)
             for p in [
                 "Week ", "Races ", "Min entries ", "Penalty ", "No incident ", "DQ at ",
-                "(", "Rolling", "Standing", "Forecast", "Single-file", "- Permissive", "- Strict", "Maintain"
+                "(", "Rolling", "Standing", "Forecast", "Single-file", "- Permissive",
+                "- Strict", "Maintain",
             ]
         ):
             return True
-        if re.match(r"^[HCF]:\d+L", s) or re.match(r"^[A-Z0-9]{2,4}:\s*\d+\s*tire", s, re.IGNORECASE):
+        if re.match(r"^[HCF]:\d+L", s) or re.match(
+            r"^[A-Z0-9]{2,4}:\s*\d+\s*tire", s, re.IGNORECASE
+        ):
             return True
-        if any(k in s.lower() for k in ["laps", "mins", "tire sets", "scrutiny", "cautions", "°f", "°c", "rain chance"]):
-            return True
-        return False
+        detail_keywords = [
+            "laps", "mins", "tire sets", "scrutiny", "cautions", "°f", "°c", "rain chance",
+        ]
+        return any(k in s.lower() for k in detail_keywords)
 
     def _extract_series_candidates(self, all_text_lines: list[str], idx: int) -> list[str]:
-        """Extracts candidate lines for series title and vehicle description by walking backwards."""
+        """Extracts candidate lines for series title and cars by walking backwards."""
         candidates: list[str] = []
         for back_idx in range(idx - 1, max(0, idx - 20), -1):
             line = all_text_lines[back_idx].strip()
@@ -228,10 +260,7 @@ class ScheduleEngine:
             if not joined:
                 joined = line
             else:
-                if joined.endswith("-"):
-                    joined = joined + line
-                else:
-                    joined = joined + " " + line
+                joined = joined + line if joined.endswith("-") else joined + " " + line
         return joined
 
     def _clean_series_title(self, raw_title: str) -> str:
@@ -250,9 +279,20 @@ class ScheduleEngine:
         return s
 
     def _parse_license_group(self, lic_line: str) -> tuple[str, int]:
-        """Determines license group name and ID from the license description line."""
+        """Determines effective license group name and ID from the license description line."""
+        cleaned = lic_line.strip()
+        # In iRacing, a 4.0 SR in a class qualifies for the next license class up
+        promotion_map: dict[str, tuple[str, int]] = {
+            "Rookie 4.0": ("Class D", 2),
+            "Class D 4.0": ("Class C", 3),
+            "Class C 4.0": ("Class B", 4),
+            "Class B 4.0": ("Class A", 5),
+        }
+        for prefix, promoted in promotion_map.items():
+            if cleaned.startswith(prefix):
+                return promoted
         for group_key, group_info in license_groups_map.items():
-            if lic_line.strip().startswith(group_key):
+            if cleaned.startswith(group_key):
                 return str(group_info["name"]), int(group_info["id"])
         return "Rookie", 1
 
@@ -264,7 +304,9 @@ class ScheduleEngine:
             or "fixed" in lic_line.lower()
         )
 
-    def _parse_weeks(self, all_text_lines: list[str], idx: int, next_idx: int, category: str) -> list[dict[str, Any]]:
+    def _parse_weeks(
+        self, all_text_lines: list[str], idx: int, next_idx: int, category: str
+    ) -> list[dict[str, Any]]:
         """Parses the weekly schedule details for a series."""
         weeks = []
         week_re = re.compile(r"^Week\s+(\d+)\s+\(([^)]+)\)\s*(.*)$")
@@ -283,20 +325,40 @@ class ScheduleEngine:
 
                 # Check if next line is a track continuation (wrapped track name or config)
                 consumed_next = False
+                skip_detail_keywords = [
+                    "°f", "°c", "rain chance", "cautions", "laps", "mins",
+                    "rolling", "standing", "qual scrutiny",
+                ]
+                continuation_terms = [
+                    "Open Wheel", "without", "without first", "GT", "Grand",
+                    "Infield Road", "Historical", "24 Heures du", "Big",
+                    "Legends Road", "Kurzanbindung", "National", "West",
+                    "Dirt Road", "Rallycross",
+                ]
                 if j + 1 < next_idx:
                     next_l = all_text_lines[j + 1].strip()
-                    if (
+                    is_track_cont = (
                         next_l
                         and not timeslot_re.match(next_l)
                         and not next_l.startswith("Week ")
                         and "-->" not in next_l
                         and not next_l.startswith("Dirt Outlaw Micro Sprint Car")
-                        and not any(k in next_l.lower() for k in ["°f", "°c", "rain chance", "cautions", "laps", "mins", "rolling", "standing", "qual scrutiny"])
-                    ):
-                        if track_name.endswith("-") or (not next_l.isdigit() and any(track_name.endswith(" " + term) for term in ["Open Wheel", "without", "without first", "GT", "Grand", "Infield Road", "Historical", "24 Heures du", "Big", "Legends Road", "Kurzanbindung", "National", "West", "Dirt Road", "Rallycross"])):
-                            track_name = (track_name + " " + next_l).replace("  ", " ").strip()
-                            skip_until = j + 1
-                            consumed_next = True
+                        and not any(k in next_l.lower() for k in skip_detail_keywords)
+                        and (
+                            track_name.endswith("-")
+                            or (
+                                not next_l.isdigit()
+                                and any(
+                                    track_name.endswith(" " + term)
+                                    for term in continuation_terms
+                                )
+                            )
+                        )
+                    )
+                    if is_track_cont:
+                        track_name = (track_name + " " + next_l).replace("  ", " ").strip()
+                        skip_until = j + 1
+                        consumed_next = True
 
                 # Split track name & config
                 if " - " in track_name:
@@ -358,10 +420,7 @@ class ScheduleEngine:
             duration_minutes = mins_val
         elif laps_val is not None:
             cat_upper = category.upper()
-            if "OVAL" in cat_upper:
-                lap_time_seconds = 25  # estimate 25 seconds for Oval
-            else:
-                lap_time_seconds = 100  # estimate 100 seconds for road/other
+            lap_time_seconds = 25 if "OVAL" in cat_upper else 100
             duration_minutes = max(10, int((laps_val * lap_time_seconds) / 60))
 
         return duration_minutes, laps_val
@@ -427,6 +486,8 @@ class ScheduleEngine:
         specific_slots: list[tuple[int, int, int]] = []
 
         s = schedule_str.lower()
+        if "|" in s:
+            s = s.split("|", 1)[0].strip()
 
         if "gmt" in s or "et" in s or "est" in s or "edt" in s:
             specific_slots = self._parse_gmt_specific_slots(s)
@@ -457,7 +518,12 @@ class ScheduleEngine:
         }
 
         # Check for ET pattern: e.g. "Races on Monday at 8pm ET"
-        et_match = re.search(r"\b(mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?)\b.*?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:et|est|edt)", s)
+        et_pattern = (
+            r"\b(mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|"
+            r"fri(?:day)?|sat(?:urday)?|sun(?:day)?)\b"
+            r".*?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:et|est|edt)"
+        )
+        et_match = re.search(et_pattern, s)
         if et_match:
             day_str = et_match.group(1)
             day_idx = days_map.get(day_str, 0)
@@ -509,10 +575,10 @@ class ScheduleEngine:
             times = re.findall(r"\b(\d{1,2})(?::(\d{2}))?\b", time_part)
             for d in days:
                 for h_str, m_str in times:
-                    h = int(h_str)
-                    m = int(m_str) if m_str else 0
-                    if h < 24 and m < 60:
-                        slots.append((d, h, m))
+                    hour = int(h_str)
+                    minute = int(m_str) if m_str else 0
+                    if hour < 24 and minute < 60:
+                        slots.append((d, hour, minute))
 
         return sorted(list(set(slots)))
 
@@ -524,10 +590,7 @@ class ScheduleEngine:
 
         if "30 minutes" in s or "thirty minutes" in s:
             interval_hours = 1
-            if "15" in s and "45" in s:
-                minutes = [15, 45]
-            else:
-                minutes = [0, 30]
+            minutes = [15, 45] if "15" in s and "45" in s else [0, 30]
         elif "2 hours" in s or "every other hour" in s:
             interval_hours = 2
             if "even" in s:
@@ -535,7 +598,7 @@ class ScheduleEngine:
             elif "odd" in s:
                 even_hours = False
             else:
-                even_hours = False if ("15" in s or "45" in s) else True
+                even_hours = not ("15" in s or "45" in s)
 
             m_matches = [int(m) for m in re.findall(r":(\d+)", s)]
             if m_matches:
@@ -553,9 +616,9 @@ class ScheduleEngine:
             m_matches = [int(m) for m in re.findall(r":(\d+)", s)]
             if m_matches:
                 minutes = m_matches
-            elif "15" in s:
+            elif "15" in s or "quarter past" in s:
                 minutes = [15]
-            elif "30" in s:
+            elif "30" in s or "half past" in s:
                 minutes = [30]
             elif "45" in s:
                 minutes = [45]
@@ -642,11 +705,11 @@ class ScheduleEngine:
                             matching_minutes.append(spec_min)
                 else:
                     hour_compatible = True
-                    if rule["interval_hours"] == 2:
-                        if rule["even_hours"] is True and not is_even:
-                            hour_compatible = False
-                        elif rule["even_hours"] is False and is_even:
-                            hour_compatible = False
+                    if rule["interval_hours"] == 2 and (
+                        (rule["even_hours"] is True and not is_even)
+                        or (rule["even_hours"] is False and is_even)
+                    ):
+                        hour_compatible = False
 
                     if hour_compatible:
                         matching_minutes = rule["minutes"]
@@ -659,7 +722,11 @@ class ScheduleEngine:
             current_hour += timedelta(hours=1)
 
     def _add_matching_regular_session(
-        self, sessions: list[dict[str, Any]], s: dict[str, Any], session_time: datetime, start_time: datetime
+        self,
+        sessions: list[dict[str, Any]],
+        s: dict[str, Any],
+        session_time: datetime,
+        start_time: datetime,
     ) -> None:
         """Checks if session date lies in an active week and adds the session if so."""
         session_date_str = session_time.strftime("%Y-%m-%d")
@@ -700,7 +767,11 @@ class ScheduleEngine:
             sessions.append(self._create_session_dict(s, selected_week, session_time, track_obj))
 
     def _create_session_dict(
-        self, s: dict[str, Any], week_info: dict[str, Any], session_time: datetime, track_obj: dict[str, Any]
+        self,
+        s: dict[str, Any],
+        week_info: dict[str, Any],
+        session_time: datetime,
+        track_obj: dict[str, Any],
     ) -> dict[str, Any]:
         """Creates a standardized session dictionary format."""
         return {

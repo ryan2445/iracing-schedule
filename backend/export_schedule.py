@@ -1,6 +1,8 @@
 import json
 import os
+
 from app.schedule import schedule_engine
+
 
 def export():
     # Construct the payload
@@ -20,7 +22,9 @@ def export():
 
     # Determine paths
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    output_path = os.path.abspath(os.path.join(current_dir, "..", "frontend", "src", "lib", "schedule.json"))
+    output_path = os.path.abspath(
+        os.path.join(current_dir, "..", "frontend", "src", "lib", "schedule.json")
+    )
     
     # Create the directory if it doesn't exist
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
