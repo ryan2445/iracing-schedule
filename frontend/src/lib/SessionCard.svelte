@@ -10,7 +10,7 @@
     Users,
     Calendar
   } from 'lucide-svelte'
-  import type { Session } from './scheduleEngine'
+  import type { Session, Week } from './scheduleEngine'
 
   let { session }: { session: Session } = $props()
 
@@ -53,7 +53,7 @@
     )
 
     // Sort chronologically (by day, then by time)
-    slots.sort((a: any, b: any) => {
+    slots.sort((a, b) => {
       if (a.sortDayNum !== b.sortDayNum) {
         return a.sortDayNum - b.sortDayNum
       }
@@ -113,7 +113,7 @@
     })
   }
 
-  function isCurrentWeek(weeks: any[], index: number, sessionStartTime: string): boolean {
+  function isCurrentWeek(weeks: Week[], index: number, sessionStartTime: string): boolean {
     if (!sessionStartTime || !weeks || !weeks[index]) return false
     const weekStart = new Date(weeks[index].date + 'T00:00:00Z').getTime()
     const nextWeekStart =
@@ -253,7 +253,7 @@
         <div class="header-local-slots">
           <span class="slots-label">Local Times:</span>
           <div class="slots-chips">
-            {#each formattedLocalSlots as group}
+            {#each formattedLocalSlots as group (group.day)}
               <span class="slot-badge">
                 <span class="slot-day">{group.day}:</span>
                 <span class="slot-times">{group.times.join(', ')}</span>
@@ -292,7 +292,7 @@
             <span>Eligible Vehicles ({session.cars.length})</span>
           </h4>
           <ul class="car-list car-grid">
-            {#each session.cars as car}
+            {#each session.cars as car (car)}
               <li>{car}</li>
             {/each}
           </ul>
@@ -314,7 +314,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {#each session.weeks as week, index}
+                  {#each session.weeks as week, index (`${week.week}-${index}`)}
                     {@const isCurrent = isCurrentWeek(session.weeks, index, session.start_time)}
                     <tr class={isCurrent ? 'current-week-row' : ''}>
                       <td class="week-num-cell">

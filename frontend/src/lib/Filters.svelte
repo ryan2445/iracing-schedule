@@ -82,7 +82,7 @@
     <div class="filter-item">
       <span class="filter-label">Race Categories</span>
       <div class="tags-row">
-        {#each availableCategories as category}
+        {#each availableCategories as category (category)}
           <button
             class="filter-tag {category
               .toLowerCase()

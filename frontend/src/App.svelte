@@ -10,7 +10,6 @@
   import Filters from './lib/Filters.svelte'
   import SessionCard from './lib/SessionCard.svelte'
   import { generateNextSessionForEverySeries, getCategories } from './lib/scheduleEngine'
-  import type { Session } from './lib/scheduleEngine'
 
   // Fetch categories directly (synchronous and static)
   const categories = getCategories()
@@ -36,8 +35,7 @@
 
   // Reset limitCount whenever filters change to keep things responsive
   $effect(() => {
-    searchQuery
-    selectedCategories
+    const _filters = [searchQuery, selectedCategories]
     limitCount = 100
   })
 
@@ -78,8 +76,8 @@
   const sortedSessions = $derived.by(() => {
     const list = [...nextUpcomingSessions]
     list.sort((a, b) => {
-      let valA: any
-      let valB: any
+      let valA: string | number | boolean
+      let valB: string | number | boolean
 
       if (sortBy === 'track_name') {
         valA = a.track?.track_name || ''
@@ -91,7 +89,7 @@
 
       if (typeof valA === 'string') {
         valA = valA.toLowerCase()
-        valB = (valB || '').toLowerCase()
+        valB = String(valB || '').toLowerCase()
       }
 
       if (valA < valB) return sortOrder === 'asc' ? -1 : 1
@@ -182,7 +180,7 @@
         <span class="sort-title">Sort Grid:</span>
       </div>
       <div class="sort-pills-container">
-        {#each [{ id: 'start_time', label: 'Start Time' }, { id: 'series_name', label: 'Series Name' }, { id: 'category', label: 'Category' }, { id: 'license_group_id', label: 'License' }, { id: 'duration_minutes', label: 'Duration' }, { id: 'track_name', label: 'Track' }, { id: 'fixed_setup', label: 'Setup' }] as field}
+        {#each [{ id: 'start_time', label: 'Start Time' }, { id: 'series_name', label: 'Series Name' }, { id: 'category', label: 'Category' }, { id: 'license_group_id', label: 'License' }, { id: 'duration_minutes', label: 'Duration' }, { id: 'track_name', label: 'Track' }, { id: 'fixed_setup', label: 'Setup' }] as field (field.id)}
           <button
             class="sort-pill-btn {sortBy === field.id ? 'active' : ''}"
             onclick={() => handleSortChange(field.id as SortField)}
